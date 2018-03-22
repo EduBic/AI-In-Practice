@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+
+<body>
+    <div id="vis1"></div>
+    <div id="vis2"></div>
+</body>
+
+<script>
+// Version 1: no data-binding, use simply canvas with D3.js
+function version1() {
+    var chart = d3.select("#vis1").append("canvas")
+    .attr("width", 500)
+    .attr("height", 200);
+
+    var context1 = chart.node().getContext("2d");
+    var data1 = [1,2,13,20,23];
+
+    var scale1 = d3.scaleLinear()
+    .range([10, 290])
+    .domain([1,23]);
+
+    data1.forEach(function(d, i) {
+    context1.beginPath();
+    context1.rect(scale1(d), 1, 6, 6);
+    context1.fillStyle="red";
+    context1.fill();
+    context1.closePath();
+    });
+};
+version1();
+
+// Version 2: 
+function version2() {
+    var base2 = d3.select("#vis2");
+
+    var chart2 = base2.append("canvas")
+    .attr("width", 400)
+    .attr("height", 300);
+
+    var context = chart2.node().getContext("2d");
+
+    // Create an in memory only element of type 'custom'
+    var detachedContainer = document.createElement("custom");
+
+    // Create a d3 selection for the detached container. We won't
+    // actually be attaching it to the DOM.
+    var dataContainer = d3.select(detachedContainer);
+
+    function drawCustom(data) {
+    var scale = d3.scaleLinear()
+        .range([10, 390])
+        .domain(d3.extent(data));
+
+    var dataBinding = dataContainer.selectAll("custom.rect")
+        .data(data, function(d) { return d; });
+
+    // update existing element to have size 15 and fill green
+    dataBinding
+        .attr("size", 15)
+        .attr("fillStyle", "green");
+
+    // for new elements, create a 'custom' dom node, of class rect
+    // with the appropriate rect attributes
+    dataBinding.enter()
+        .append("custom")
+        .classed("rect", true)
+        .attr("x", scale)
+        .attr("y", 100)
+        .attr("size", 8)
+        .attr("fillStyle", "red");
+
+    // for exiting elements, change the size to 5 and make them grey.
+    dataBinding.exit()
+        .attr("size", 6)
+        .attr("fillStyle", "lightgrey");
+
+        // Draw canvas:
+
+        // First clear canvas
+        context.fillStyle = "#fff";
+        context.rect(0, 0, chart2.attr("width"), chart2.attr("height"));
+        context.fill();
+
+        // Get elements and redraw them
+        var elements = dataContainer.selectAll("custom.rect");
+        elements.each(function(d) {
+            var node = d3.select(this);
+
+            context.beginPath();
+            context.fillStyle = node.attr("fillStyle");
+            context.rect(
+                node.attr("x"), 
+                node.attr("y"), 
+                node.attr("size"), 
+                node.attr("size")
+            );
+            context.fill();
+            context.closePath();
+        });
+    }
+
+        drawCustom([1,2,13,20,23]);
+        drawCustom([1,4,10,16,20]);
+    }
+version2();
+
+</script>

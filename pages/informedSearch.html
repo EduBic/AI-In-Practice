@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vacuum Cleaner Example</title>
+    <meta charset="utf-8" />
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+
+<body>
+
+    <p>
+        Ricerca informata
+        -> informata: conoscenza in più, 
+        su di essa scegliere una funzione di valutazione 
+        per capire dove andare. -> Evaluation function
+
+        Best first search: A*, greedy
+
+        Heuristics
+
+        Local search algorithm
+        - Hill clibing
+        - Simulated annealing 
+        - local beam
+        - Genetic algorithm
+
+    </p>
+
+    <p>
+            // Fatto, mi sono iscritto
+            // Interessante come si perda un sacco di tempo a dire cosa faremo in futuro piuttosto che cominciare ora
+            // Ricerca informata
+            
+            // Quindi proviamo a scrivere A*
+            // scriviamo gli appunti o commenti sulla lezione, è divertente
+            // se ci capita di scrivere anche codice, meglio
+            
+            // LEZIONE 22 Marzo 2018
+            
+            /* DOMANDE
+             * 
+             * Quale algoritmo ricorda straight line distance? Ricerca costo uniforme?
+             * 
+             * Quale versione di algoritmo è Greedy Best first search?
+             * 
+             * Quando finirà questa lezione?
+             * 
+             * Qual è il significato della vita, dell'universo e tutto quanto?
+             * 
+             * Perché oggi sembra spiegare meglio del solito?
+             * 
+             * Perché ci troviamo qui? Sto sempre più pensando di saltare le lezioni e amen
+             *
+             * /
+            /*
+             * APPUNTI
+             * 
+             * Che differenza c'è tra ricerca non informata e informata?
+             * Nella ricerca informata c'è una conoscenza in più del problema per velocizzare
+             * il processo di ricerca.
+             * 
+             * f : funzione di valutazione
+             * 
+             * Calcolo di evaluation function f(n)
+             * che contiene heuristic function h(n) -> costo stimato da nodo "n" all'obiettivo "Goal"
+             * h(n) dipende solo dallo stato associato a n.
+             * Assunzioni: h(n) è positiva e h(n) = 0 per ogni stato.
+             * 
+             * 1) Uniform Cost Search
+             * straigh line distance -> Ricerca costo uniforme
+             * 
+             * g(n) nella uniform cost search fornisce il coste per andare dallo stato iniziale (root) fino ad n
+             * g(n) non è una stima, ma un costo certo.
+             * 
+             * f(n) == h(n)
+             * 
+             * La versione della ricerca su grafo è più furba rispetto a quella su albero 
+             * 2) Best first seach. -> Soluzione greedy? Sì
+             * Espando il nodo che è più vicino all'obiettivo tra i nodi collegati al corrente.
+             * Ogni nodo deve avere l'informazione di quanto è distante dal nodo obiettivo.
+             *  
+             * Completo? No, può ciclare o arrivare in un punto morto oppure c'è un infinito numero di stati
+             * Ottimo? Nope
+             * 
+             * MA EDUARD SCOLTAMI UN ATTIMO COSA VUOL DIRE ALREADY ESPENSIVE???????? MI SA CHE VOLEVA SCRIVERE ALREADY EXPLORED, già
+             * 
+             * 3) A* algorithm
+             * 
+             * f(n) = g(n) + h(n)
+             * g(n) = costo già sostenuto prima da stato iniziale al nodo n (costo effettivo fatto)
+             * h(n) = costo da n a stato obiettivo (euristica)
+             * 
+             * 
+             * 
+             * Euristica ammissibile
+             * Non deve sovrastimare il costo per raggiungere un obiettivo
+             * h(n) <= h*(n)
+             * 
+             * 
+             * Teorema su A*
+             * Dimostrazione - Si basa sul confronto di f e g tra un ottimo G e un sub-ottimo G2
+             * 
+             * 
+             * Euristica consistente
+             * Un'euristica è consistente se:
+             * per ogni nodo n e ogni successore n' generato da un'azione a: h(n) <= c(n,a,n') + h(n')
+             * c(n,a,n') è il costo per andare da n a n' con l'azione a.
+             * 
+             * Se un'euristica è consistente allora è anche ammissibile.
+             * Questa implicazione (Consistenza => Ammissibilità) si dimostra per induzione su uno stato n
+             * Scrivo solo il caso base che di solito è semplice
+             * h(G) = 0
+             * Sia n un genitore di G
+             * h(n) = c(n,a,G) + h(G) = c(n,a,G) = h*(n) quindi h(n) <= h*(n) OK, ammissibile.
+             * 
+             * * Il caso induttivo non ho per niente voglia di scriverlo. Ciao. Ma non scrivere le dimostrazioni.
+             * * usiamo lo * * per dire commento nostro esterno alla materia, ok? Non aderisco a questa notazione.
+             * * Manca ancora mezz'ora dai OK
+             * 
+             * Torniamo a A*
+             * Completo?  Sì
+             * Complessità esponenziale
+             * Ottimo? Sì
+             * 
+             * 
+             * 
+             * Dominanza: quando un'euristica domina l'altra.
+             * h2 domina h1 se h2(n) >= h1(n) per ogni n
+             * 
+             * Un problema rilassato ha meno vincoli rispetto all'originale (Giura?)
+             * Grafo del problema rilassato = Supergrafo problema originale
+             * 
+             * 
+             * * RIP corso intelligenza artificiale
+             * * Ne danno il lieto annuncio gli studenti della magistrale
+             * * No dai oggi non è andata così male poverina.
+             * * Serio? Sì
+             * Oggi è colpa nostra
+             * * è sperduti rilassato cit. Fede
+             *  NOOOOO BASTA RICERCA LOCALE
+             * Local Search is back, bitches
+             * /
+    </p>
+
+        
+        <script src="../js/informedSearch.js"></script>
+        
+</body>
+
+</html> 

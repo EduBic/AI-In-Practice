@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Title of the document</title>
+    <meta charset="utf-8" />
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <style>
+        circle {
+            color: black;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div id="graph"></div>
+
+<script>
+
+class Problem {
+    constructor(initState, goalState) {
+        this.initState = initState;
+        this.goalState = goalState;
+    }
+
+    goalTest(state) {
+        return state === this.goalState;
+    }
+};
+
+class Node {
+    constructor(state) {
+        this.state = state;
+    }
+    
+};
+
+// init variables
+var problem = new Problem("A", "B");
+var node = new Node(problem.initState);
+var frontier = [node];
+var explored = [];
+
+// test d3
+var nodes = [{x: 30, y: 50},
+        {x: 30, y: 80},
+        {x: 90, y: 120}];
+
+var links = [
+  {source: nodes[0], target: nodes[1]},
+  {source: nodes[2], target: nodes[1]},
+  {source: nodes[0], target: nodes[2]}
+]
+
+// init the graph
+var vis = d3.select("#graph")
+    .append("svg")
+    .attr("width", 960)
+    .attr("height", 500);
+
+// add nodes
+vis.selectAll("circles .node")
+    .data(nodes)
+    .enter()
+    .append("svg:circle")
+    .attr("class", "nodes")
+    .attr("cx", function(d) { return d.x; })
+    .attr("cy", function(d) { return d.y; })
+    .attr("r", "8px")
+    .attr("fill", "black")
+
+// add edges
+vis.selectAll(".line")
+   .data(links)
+   .enter()
+   .append("line")
+   .attr("x1", function(d) { return d.source.x })
+   .attr("y1", function(d) { return d.source.y })
+   .attr("x2", function(d) { return d.target.x })
+   .attr("y2", function(d) { return d.target.y })
+   .style("stroke", "black");
+
+
+
+</script>
+        
+</body>
+
+</html> 
