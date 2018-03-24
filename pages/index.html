@@ -10,15 +10,145 @@
 
     <ul>
         <li><a href="vacuumCleaner.html">Vacuum Cleaner</a></li>
-        <li><a href=""></a></li>
-        <li><a href="test.html">Test page</a></li>
-        <li><a href="test-canvas.html">Test D3 canvas</a></li>
+    </ul>
+
+    <h2>Test pages</h2>
+    <ul>
+        <li><a href="test.html">A General test page</a></li>
+        <li><a href="test-canvas.html">Test D3.js canvas</a></li>
+        <li><a href="test-tree-diagram.html">Test D3.js Tree Diagram</a></li>
+        <li><a href="test-tree-diagram-2.html">Test D3.js Tree Diagram 2</a></li>
     </ul>
 
     <h2>Uniformed Search</h2>
     <ul>
         <li><a href="breath-first-search.html">Breath-first Search</a></li>
     </ul>
+
+    <h2>Tecnologies used</h2>
+
+    <div id="d3-summary">
+        <h3>D3.js functions summary</h3>
+
+        <div class="code">
+            <p>
+                d3.select("#x") = select the DOM node with id equal to "x"
+            </p>
+            <p>
+                d3.selectAll(".xs") = select DOM nodes with class equal to "xs"
+            </p>
+
+            <p>domNode.style("p", "v") = add CSS style attribute with property "p" with value "v" to the domNode</p>
+            <p>domNode.attr("p", "v") = add attribute "p" with value "v" to domNode</p>
+            <p>domNode.classed("c", bool) = append class "c" if true or remove it </p>
+
+            <p>domNode.on("event", function) = give interactivity to domNode</p>
+
+            <p>domNode.transition().otherFun() = transition from prev state to new state determine by otherFun()
+                <ul>
+                    <li>.delay(millisec)</li>
+                    <li>.duration(millisec)</li>
+                </ul>
+            </p>
+            
+            <!-- Import dataset -->
+            <p>d3.csv("fileName.csv",function(error,data) { ... }) = import data from a csv file</p>
+
+            <!-- Scale data -->
+            <p>d3.scale.linear().domain([a, d]).range([b, c]) = scale the value from domain (large) to range (smaller)</p>
+
+            <!-- Binding -->
+            <p>domNodes.data(data) = bind data with domNodes selected</p>
+            <p>domNodes.data(data).enter() = creates new domNode if data exceed the length of domNodes
+                <ul>
+                    <li>append(n) = add a new DOM node define in n</li>
+                    <li>insert(n)</li>
+                    <li>attr("a", "v")</li>
+                </ul>
+            </p>
+            <p>domNodes.data(data).exit() = ignores data that exceed the domNodes, the nodes without corresponding nodes are removed
+                <ul>
+                    <li>remove() = remove DOM node with no data associated</li>
+                </ul>
+            </p>
+
+
+
+        </div>
+
+    </div>
+
+    <div id="d3-process-schema">
+        <h3>D3.js process schema</h3>
+        <ol>
+            <li>Load web page</li>
+            <li>Select elements</li>
+            <li>Bind data</li>
+            <li>Create/update/remove elements</li>
+            <li>User interaction; go to step 2</li>
+        </ol>
+    </div>
+
+    <div id="svg-tag">
+        <h3>&lt;svg&gt;</h3>
+        Your canvas in which everything is drawn.
+        <ul>
+            <li>Top-left corner is 0.0</li>
+            <li>x-axis is drawn left-to-right, the y-axis is drawn top-to-bottom</li>
+        </ul>
+        <p>Elements inside:</p>
+        <ul>
+            <li>circle &amp; ellipse
+                <ul>
+                    <li>cx and cy determine the center of the circle</li>
+                    <li>r determines the radius of the circle</li>
+                </ul>
+            </li>
+            <li>rect
+                <ul>
+                    <li>x and y: determine the shape’s top-left corner</li>
+                    <lI>height and width: that determine its overall form</lI>
+                </ul>
+            </li>
+            <li>line
+                <li>x1 and y1 determine the starting point</li>
+                <li>x2 and y2 determine the end point</li>
+            </li>
+            <li>polygon</li>
+            <li>text</li>
+            <li>g: logical grouping of elements</li>
+            <li>path
+                <ul>
+                    <li>d: 
+                        <ul>
+                            <li>Z at end determines the close of path (close shape)</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <p>In order to style these elements use:</p>
+        <ul>
+            <li>fill</li>
+            <li>stroke, stroke-width, stroke-dasharray</li>
+        </ul>
+
+        <p>Move these elements? Add attribute transform equal to:</p>
+        <ul>
+            <li>translate(x, y)</li>
+            <li>scale(v)</li>
+        </ul>
+        
+
+    </div>
+
+    <div id="canvas-tag">
+        <h3>&lt;canvas&gt;</h3>
+        Draw a bitmap.
+
+        <h4></h4>
+    </div>
         
         
 </body>

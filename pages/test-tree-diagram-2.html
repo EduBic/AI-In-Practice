@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Title of the document</title>
+    <meta charset="utf-8" />
+    <script src="https://d3js.org/d3.v4.js"></script>
+
+    <style>
+        .node circle {
+            fill: #fff;
+            stroke: steelblue;
+            stroke-width: 2px;
+        }
+
+        .node text { 
+            font: 12px sans-serif; 
+        }
+
+        .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 2px;
+        }
+
+        svg {
+          border: 1px solid black;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+  <button type="button" onclick="addNode()">Add node</button>
+  <input id="toNode" type="text" />
+  <svg id="tree-svg"></svg>
+
+</body>
+
+<script>
+
+var rawData = {
+    "name": 1,
+    "content": "ciao",
+    "children": [
+      {
+        "name": 2
+      },
+      {
+        "name": 3,
+        "children": [
+          {
+            "name": 4
+          },
+          {
+            "name": 5
+          }
+        ]
+      },
+      {
+        "name": 6
+      }
+    ]
+}
+
+var width = 500,
+  height = 500;
+
+var svg = d3.select("#tree-svg")
+            .attr("width", width)
+            .attr("height", height);
+
+var tree = d3.tree()
+  .size([width * 0.9, height * 0.9]);
+
+
+var svg = d3.select("svg");
+
+// Add <g> to <svg> with id = treeG
+var treeGroup = svg.append("g")
+                    .attr("id", "treeG");
+
+
+function drawTree() {
+
+  d3.select("g#treeG")
+    .remove()
+
+  var treeGroup = svg.append("g")
+                    .attr("id", "treeG");
+
+var root = d3.hierarchy(rawData);
+var nodes = root.descendants();
+var links = tree(root).links();
+
+treeGroup.selectAll("path")
+    .data(links)
+    .enter()
+    .append("path")
+    .attr("class", "link")
+    .attr("d", d3.linkVertical()
+        .x(function(d) { return d.x; })
+        .y(function(d) { return d.y; }))
+
+// take all g.node DOM elements
+// bind with nodes variable
+// if nodes > g.node then 
+//    (enter) append g.node elements
+
+treeGroup.selectAll("g.node")
+    .data(nodes)
+    .enter() // if lack g.node elements
+    // add this:
+    .append("g")
+    .attr("class", "node")
+    // we move the g elem for move circle with label
+    .attr("transform", d => {
+      return "translate(" + d.x + "," + d.y + ")";
+    })
+    // and to g add this
+    .append("circle")
+    .attr("r", 4)
+    
+// Add label for each g.node
+d3.selectAll("g.node")
+  .append("text")
+  .attr("dx", 12)
+  .attr("dy", ".35em")
+  .text(function(d) {
+    return d.data.name; 
+    });
+};
+
+// Zoom and pan features
+var treeZoom = d3.zoom()
+  .on("zoom", function() {
+    d3.select("g#treeG")
+      .attr("transform",
+      "translate(" + d3.event.transform.x +"," + 
+        d3.event.transform.y + ")"
+    )
+});
+d3.select("svg").call(treeZoom)
+
+drawTree();
+
+var count = 7;
+
+function addNode() {
+  var childName = parseInt(document
+    .getElementById("toNode").value);
+  console.log(childName)
+
+  var newNode = {
+        "name": count++
+      }
+
+  searchChildAndAddNode(
+    rawData.children, newNode, childName)
+
+  console.log("rawData", rawData);
+
+  drawTree();
+}
+
+function searchChildAndAddNode(children, node, childName) {
+
+  if (children === undefined) {
+    return;
+  }
+
+  children.forEach(child => {
+
+    if (child.name === childName) {
+      child.children = child.children || [];
+      child.children.push(node);
+    } else {
+      searchChildAndAddNode(child.children, node, childName);
+    }
+
+  });
+}
+
+</script>
+
+</html> 
