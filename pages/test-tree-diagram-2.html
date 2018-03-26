@@ -41,25 +41,24 @@
 <script>
 
 var rawData = {
-    "name": 1,
-    "content": "ciao",
+    "id": 1,
     "children": [
       {
-        "name": 2
+        "id": 2
       },
       {
-        "name": 3,
+        "id": 3,
         "children": [
           {
-            "name": 4
+            "id": 4
           },
           {
-            "name": 5
+            "id": 5
           }
         ]
       },
       {
-        "name": 6
+        "id": 6
       }
     ]
 }
@@ -67,19 +66,21 @@ var rawData = {
 var width = 500,
   height = 500;
 
+// Zoom and pan features
+function onPanZoom() {
+  d3.select("g#treeG")
+      .attr("transform",
+      "translate(" + d3.event.transform.x +"," 
+                  + d3.event.transform.y + ")"
+    )
+}
+
 var svg = d3.select("#tree-svg")
             .attr("width", width)
-            .attr("height", height);
+            .attr("height", height)
+            .call(d3.zoom().on("zoom", onPanZoom));
 
-var tree = d3.tree()
-  .size([width * 0.9, height * 0.9]);
-
-
-var svg = d3.select("svg");
-
-// Add <g> to <svg> with id = treeG
-var treeGroup = svg.append("g")
-                    .attr("id", "treeG");
+var tree = d3.tree().size([width, height]);
 
 
 function drawTree() {
@@ -87,6 +88,7 @@ function drawTree() {
   d3.select("g#treeG")
     .remove()
 
+  // Add <g> to <svg> with id = treeG
   var treeGroup = svg.append("g")
                     .attr("id", "treeG");
 
@@ -128,36 +130,26 @@ d3.selectAll("g.node")
   .attr("dx", 12)
   .attr("dy", ".35em")
   .text(function(d) {
-    return d.data.name; 
+    return d.data.id; 
     });
 };
 
-// Zoom and pan features
-var treeZoom = d3.zoom()
-  .on("zoom", function() {
-    d3.select("g#treeG")
-      .attr("transform",
-      "translate(" + d3.event.transform.x +"," + 
-        d3.event.transform.y + ")"
-    )
-});
-d3.select("svg").call(treeZoom)
-
 drawTree();
 
+
+// Add node feature
 var count = 7;
 
 function addNode() {
   var childName = parseInt(document
     .getElementById("toNode").value);
-  console.log(childName)
 
-  var newNode = {
-        "name": count++
-      }
+  console.log(childName);
 
-  searchChildAndAddNode(
-    rawData.children, newNode, childName)
+  var newNode = { "id": count++ };
+
+  searchChildAndAddNode(rawData.children, 
+    newNode, childName);
 
   console.log("rawData", rawData);
 
@@ -172,7 +164,7 @@ function searchChildAndAddNode(children, node, childName) {
 
   children.forEach(child => {
 
-    if (child.name === childName) {
+    if (child.id === childName) {
       child.children = child.children || [];
       child.children.push(node);
     } else {

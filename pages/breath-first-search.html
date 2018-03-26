@@ -4,7 +4,8 @@
     <title>Title of the document</title>
     <meta charset="utf-8" />
     <script src="https://d3js.org/d3.v4.min.js"></script>
-
+    <script src="./../js/utils.js"></script>
+    <script src="./../js/tree-drawer.js"></script>
     <style>
         circle {
             color: black;
@@ -15,76 +16,150 @@
 
 <body>
 
-    <div id="graph"></div>
+    <button id="startBtn" type="button">
+        Start breathFirstSearch
+    </button>
+
+    <div id="console"></div>
+    <div id="tree"></div>
+
+    
+    <svg id="tree-svg"></svg>
 
 <script>
 
-class Problem {
-    constructor(initState, goalState) {
-        this.initState = initState;
-        this.goalState = goalState;
+// example of dataset:
+var emaGraph = [
+    {
+        id: "A",
+        adj: [{ id: "B"}]
+    },
+    {
+        id: "B",
+        adj: [{ id: "C"}, { id: "D"}]
+    },
+    {
+        id: "C",
+        adj: [{ id: "E"}]
+    },
+    {
+        id: "D",
+        adj: [{ id: "B"},{ id: "A"}]
+    },
+    {
+        id: "E",
+        adj: [{ id: "C"}, { id: "E"}]
     }
-
-    goalTest(state) {
-        return state === this.goalState;
-    }
-};
-
-class Node {
-    constructor(state) {
-        this.state = state;
-    }
-    
-};
-
-// init variables
-var problem = new Problem("A", "B");
-var node = new Node(problem.initState);
-var frontier = [node];
-var explored = [];
-
-// test d3
-var nodes = [
-    {x: 30, y: 50},
-    {x: 30, y: 80},
-    {x: 90, y: 120}
-];
-
-var links = [
-  {source: nodes[0], target: nodes[1]},
-  {source: nodes[2], target: nodes[1]},
-  {source: nodes[0], target: nodes[2]}
 ]
 
-// init the graph
-var vis = d3.select("#graph")
-    .append("svg")
-    .attr("width", 960)
-    .attr("height", 500);
 
-// add nodes
-vis.selectAll("circles .node")
-    .data(nodes)
-    .enter()
-    .append("svg:circle")
-    .attr("class", "nodes")
-    .attr("cx", function(d) { return d.x; })
-    .attr("cy", function(d) { return d.y; })
-    .attr("r", "8px")
-    .attr("fill", "black")
+var rawData = {
+    "id": 1,
+    "children": [
+      {
+        "id": 2
+      },
+      {
+        "id": 3,
+        "children": [
+          {
+            "id": 4
+          },
+          {
+            "id": 5
+          }
+        ]
+      },
+      {
+        "id": 6
+      }
+    ]
+}
 
-// add edges
-vis.selectAll(".line")
-   .data(links)
-   .enter()
-   .append("line")
-   .attr("x1", function(d) { return d.source.x })
-   .attr("y1", function(d) { return d.source.y })
-   .attr("x2", function(d) { return d.target.x })
-   .attr("y2", function(d) { return d.target.y })
-   .style("stroke", "black");
+treeDrawer.drawTree(rawData);
+
+// Global var
+var consoleData = [];
+
+document.getElementById("startBtn").addEventListener("click", function() {
+    // init variables
+    var problem = new Problem("A", "D");
+    breathFirstSearch(problem);
+});
 
 
+// breath-first search
+function breathFirstSearch(problem) {
+    var root;
+    for (var i = 0; i < emaGraph.length; i++) {
+        if (emaGraph[i].id === problem.initState) {
+            root = emaGraph[i];
+        }
+    }
+
+    log(root.id);
+
+    if (problem.goalState === root.id) {
+        log("FOUND PATH");
+    }
+
+    var frontier = [root];
+    var explored = [];
+
+    while (frontier.length > 0) {
+        log("iteration");
+
+        var node = frontier.shift();
+        console.log("Frontier: ", frontier);
+        
+        explored.push(node);
+
+        console.log("Take node: ", node)
+
+        node.adj.forEach(adjNode => {
+
+            // get the node from adjList
+            var child = emaGraph.filter(n => {
+                return n.id === adjNode.id
+            })[0];
+
+            // is already explored?
+            var isChildExplored = explored.filter(n => {
+                return n.id === child.id;
+            });
+            if (isChildExplored.length === 0) {
+                console.log("Child:", child)
+                log(child.id)
+                
+                if (problem.goalState === child.id) {
+                    log("FOUND PATH");
+                }
+
+                frontier.push(child);
+            }
+
+        });
+
+    }
+
+    return "Failure";
+}
+
+
+function log(msg) {
+    // 1. update dataset
+    console.log("log", consoleData)
+    console.log("msg", msg)
+    consoleData.push(msg);
+
+    // 2. rebind dataset
+    d3.select("#console")
+        .selectAll("div")
+        .data(consoleData)
+        .enter()
+        .append("div")
+        .html(d => { return d;} )
+}
 
 </script>
         
