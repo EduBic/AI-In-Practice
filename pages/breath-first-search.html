@@ -37,9 +37,6 @@
     </button>
 
     <div id="console"></div>
-    <div id="tree"></div>
-
-    
     <svg id="tree-svg"></svg>
 
     <script src="./../js/tree-drawer.js"></script>
@@ -77,19 +74,67 @@ var emaGraph = [
     }
 ]
 
-
-
-//treeDrawer.drawTree();
-
 // Global var
 var consoleData = [];
 
+// Add click listener
 document.getElementById("startBtn").addEventListener("click", function() {
     // init variables
-    var problem = new Problem("A", "F");
+    let problem = new Problem("A", "F");
     breathFirstSearch(problem, emaGraph);
 });
 
+function exploreNode(graph, problem, frontier, explored) {
+        
+    let node = frontier.shift();
+
+    console.log("Take node: ", node, "\nFrontier: ", frontier)
+    treeDrawer.nextNode(node);
+    
+    explored.push(node);
+
+    // check all children
+    node.adj.forEach(adjNode => {
+        
+        // get the node from adjList
+        var child = graph.filter(n => {
+            return n.id === adjNode.id
+        })[0];
+
+        // is already explored?
+        var isChildExplored = explored.filter(n => {
+            return n.id === child.id;
+        });
+        var isChildInFrontier = frontier.filter(n => {
+            return n.id === child.id;
+        })
+
+        if (isChildExplored.length === 0 
+            && isChildInFrontier.length === 0) {
+
+            console.log("Add Child:", child)
+            log(child.id)
+            treeDrawer.addChild(child)
+            
+            if (problem.goalState === child.id) {
+                log("FOUND PATH");
+            }
+
+            frontier.push(child);
+        }
+
+    });
+};
+
+function startIntervalExploration(graph, problem, frontier, explored) {
+    var token = setInterval(function() {
+        if (frontier.length > 0) {
+            exploreNode(graph, problem, frontier, explored);
+        } else {
+            clearInterval(token);
+        }
+    }, 2000);
+};
 
 // breath-first search
 function breathFirstSearch(problem, graph) {
@@ -109,50 +154,13 @@ function breathFirstSearch(problem, graph) {
     var frontier = [root];
     var explored = [];
 
-    while (frontier.length > 0) {
+    // classic way
+    // while (frontier.length > 0) {
+    //     exploreNode(graph, problem, frontier, explored);
+    // }
 
-        log("iteration");
-        
-        var node = frontier.shift();
-        console.log("Frontier: ", frontier);
-        
-        explored.push(node);
-
-        console.log("Take node: ", node)
-        treeDrawer.nextNode(node);
-
-        node.adj.forEach(adjNode => {
-            
-            // get the node from adjList
-            var child = graph.filter(n => {
-                return n.id === adjNode.id
-            })[0];
-
-            // is already explored?
-            var isChildExplored = explored.filter(n => {
-                return n.id === child.id;
-            });
-            var isChildInFrontier = frontier.filter(n => {
-                return n.id === child.id;
-            })
-
-            if (isChildExplored.length === 0 
-                && isChildInFrontier.length === 0) {
-                    
-                console.log("Add Child:", child)
-                log(child.id)
-                treeDrawer.addChild(child)
-                
-                if (problem.goalState === child.id) {
-                    log("FOUND PATH");
-                }
-
-                frontier.push(child);
-            }
-
-        });
-
-    }
+    // use interval of 2 seconds
+    startIntervalExploration(graph, problem, frontier, explored);
 
     return "Failure";
 }

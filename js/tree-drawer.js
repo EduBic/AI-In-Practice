@@ -35,7 +35,7 @@
 
 
     var realTimeGraph = {};
-    var currentNode;
+    var currentNode = undefined;
         
     treeDrawer.addChild = function(node) {
         currentNode.children = currentNode.children || [];
