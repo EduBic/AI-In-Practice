@@ -21,10 +21,40 @@
     var tree = d3.tree()
         .size([width, height]);
 
+    // Build graph in real time
+    treeDrawer.testGraph = function() {
+        treeDrawer.nextNode({ id: 1});
+        treeDrawer.addChild({ id: 2});
+        treeDrawer.addChild({ id: 6});
+        treeDrawer.nextNode({ id: 2});
+        treeDrawer.addChild({ id: 3});
+        treeDrawer.addChild({ id: 7});
+        treeDrawer.nextNode({ id: 7});
+        treeDrawer.addChild({ id: 8});
+    };
+
+
+    var realTimeGraph = {};
+    var currentNode;
+        
+    treeDrawer.addChild = function(node) {
+        currentNode.children = currentNode.children || [];
+        currentNode.children.push(node);
+    
+        //console.log(realTimeGraph);
+        treeDrawer.drawTree(realTimeGraph);
+    };
+        
+    treeDrawer.nextNode = function(node) {
+        if (currentNode == undefined) {
+            realTimeGraph = node
+        }
+        currentNode = node;
+        console.log("update pointer", currentNode);
+    };
 
     treeDrawer.drawTree = function(rawData) {
-
-        document.getElementById("console").innerHTML = "ciao";
+        //document.getElementById("console").innerHTML = "ciao";
 
         // reset prev. tree
         d3.select("g#treeG")
@@ -74,7 +104,7 @@
             .text(function(d) {
                 return d.data.id; 
             });
-    }
+    };
 
 }(window.treeDrawer = window.treeDrawer || {}, d3, document));
 

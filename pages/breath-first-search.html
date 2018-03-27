@@ -5,11 +5,27 @@
     <meta charset="utf-8" />
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="./../js/utils.js"></script>
-    <script src="./../js/tree-drawer.js"></script>
     <style>
-        circle {
-            color: black;
+        .node circle {
+            fill: #fff;
+            stroke: steelblue;
+            stroke-width: 2px;
         }
+
+        .node text { 
+            font: 12px sans-serif; 
+        }
+
+        .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 2px;
+        }
+
+        svg {
+          border: 1px solid black;
+        }
+
     </style>
 
 </head>
@@ -26,6 +42,7 @@
     
     <svg id="tree-svg"></svg>
 
+    <script src="./../js/tree-drawer.js"></script>
 <script>
 
 // example of dataset:
@@ -44,56 +61,42 @@ var emaGraph = [
     },
     {
         id: "D",
-        adj: [{ id: "B"},{ id: "A"}]
+        adj: [{ id: "B"},{ id: "A"},{ id: "G"},{ id: "F"}]
     },
     {
         id: "E",
-        adj: [{ id: "C"}, { id: "E"}]
+        adj: [{ id: "C"}, { id: "F"}]
+    },
+    {
+        id: "F",
+        adj: [{ id: "G"}]
+    },
+    {
+        id: "G",
+        adj: []
     }
 ]
 
 
-var rawData = {
-    "id": 1,
-    "children": [
-      {
-        "id": 2
-      },
-      {
-        "id": 3,
-        "children": [
-          {
-            "id": 4
-          },
-          {
-            "id": 5
-          }
-        ]
-      },
-      {
-        "id": 6
-      }
-    ]
-}
 
-treeDrawer.drawTree(rawData);
+//treeDrawer.drawTree();
 
 // Global var
 var consoleData = [];
 
 document.getElementById("startBtn").addEventListener("click", function() {
     // init variables
-    var problem = new Problem("A", "D");
-    breathFirstSearch(problem);
+    var problem = new Problem("A", "F");
+    breathFirstSearch(problem, emaGraph);
 });
 
 
 // breath-first search
-function breathFirstSearch(problem) {
+function breathFirstSearch(problem, graph) {
     var root;
-    for (var i = 0; i < emaGraph.length; i++) {
-        if (emaGraph[i].id === problem.initState) {
-            root = emaGraph[i];
+    for (var i = 0; i < graph.length; i++) {
+        if (graph[i].id === problem.initState) {
+            root = graph[i];
         }
     }
 
@@ -107,19 +110,21 @@ function breathFirstSearch(problem) {
     var explored = [];
 
     while (frontier.length > 0) {
-        log("iteration");
 
+        log("iteration");
+        
         var node = frontier.shift();
         console.log("Frontier: ", frontier);
         
         explored.push(node);
 
         console.log("Take node: ", node)
+        treeDrawer.nextNode(node);
 
         node.adj.forEach(adjNode => {
-
+            
             // get the node from adjList
-            var child = emaGraph.filter(n => {
+            var child = graph.filter(n => {
                 return n.id === adjNode.id
             })[0];
 
@@ -127,9 +132,16 @@ function breathFirstSearch(problem) {
             var isChildExplored = explored.filter(n => {
                 return n.id === child.id;
             });
-            if (isChildExplored.length === 0) {
-                console.log("Child:", child)
+            var isChildInFrontier = frontier.filter(n => {
+                return n.id === child.id;
+            })
+
+            if (isChildExplored.length === 0 
+                && isChildInFrontier.length === 0) {
+                    
+                console.log("Add Child:", child)
                 log(child.id)
+                treeDrawer.addChild(child)
                 
                 if (problem.goalState === child.id) {
                     log("FOUND PATH");
@@ -148,8 +160,7 @@ function breathFirstSearch(problem) {
 
 function log(msg) {
     // 1. update dataset
-    console.log("log", consoleData)
-    console.log("msg", msg)
+    //console.log("msg", msg)
     consoleData.push(msg);
 
     // 2. rebind dataset
