@@ -1,0 +1,168 @@
+[
+    { 
+        "id": "Arad",
+        "h": 366,
+        "links": [
+            { "id": "Zerind", "cost": 75},
+            { "id": "Sibiu", "cost": 140},
+            { "id": "Timisoara", "cost": 118}
+        ]
+    },
+    {
+        "id": "Bucharest",
+        "h": 0,
+        "links": [
+            { "id": "Fagaras", "cost": 211},
+            { "id": "Pitesti", "cost": 101},
+            { "id": "Giurgiu", "cost": 90},
+            { "id": "Urziceni", "cost": 85}
+        ]
+    },
+    {
+        "id": "Craiova",
+        "h": 160,
+        "links": [
+            { "id": "Drobeta", "cost": 120},
+            { "id": "Rimnicu Vilcea", "cost": 146},
+            { "id": "Pitesti", "cost": 138}
+        ]
+    },
+    {
+        "id": "Drobeta",
+        "h": 242,
+        "links": [
+            { "id": "Mehadia", "cost": 75},
+            { "id": "Craiova", "cost": 120}
+        ]
+    },
+    {
+        "id": "Eforie",
+        "h": 161,
+        "links": [
+            { "id": "Hirsova", "cost": 86}
+        ]
+    },
+    {
+        "id": "Fagaras",
+        "h": 176,
+        "links": [
+            { "id": "Sibiu", "cost": 99}
+            { "id": "Bucharest", "cost": 211}
+        ]
+    },
+    {
+        "id": "Giurgiu",
+        "h": 77,
+        "links": [
+            { "id": "Bucharest", "cost": 90}
+        ]
+    },
+    {
+        "id": "Hirsova",
+        "h": 151,
+        "links": [
+            { "id": "Urziceni", "cost": 98},
+            { "id": "Eforie", "cost": 86}
+        ]
+    },
+    {
+        "id": "Iasi",
+        "h": 226,
+        "links": [
+            { "id": "Neamt", "cost": 87},
+            { "id": "Vaslui", "cost": 92}
+        ]
+    },
+    {
+        "id": "Lugoj",
+        "h": 244,
+        "links": [
+            { "id": "Mehadia", "cost": 70},
+            { "id": "Timisoara", "cost": 111}
+        ]
+    },
+    {
+        "id": "Mehadia",
+        "h": 241,
+        "links": [
+            { "id": "Lugoj", "cost": 70},
+            { "id": "Drobeta", "cost": 75}
+        ]
+    },
+    {
+        "id": "Neamt",
+        "h": 234,
+        "links": [
+            { "id": "Iasi", "cost": 87}
+        ]
+    },
+    {
+        "id": "Oradea",
+        "h": 380,
+        "links": [
+            { "id": "Zerind", "cost": 71},
+            { "id": "Sibiu", "cost": 151}
+        ]
+    },
+    {
+        "id": "Pitesti",
+        "h": 100,
+        "links": [
+            { "id": "Rimnicu Vilcea", "cost": 97},
+            { "id": "Craiova", "cost": 138},
+            { "id": "Bucharest", "cost": 101}
+        ]
+    },
+    {
+        "id": "Rimnicu Vilcea",
+        "h": 193,
+        "links": [
+            { "id": "Sibiu", "cost": 80},
+            { "id": "Craiova", "cost": 146},
+            { "id": "Pitesti", "cost": 97}
+        ]
+    },
+    {
+        "id": "Sibiu",
+        "h": 253,
+        "links": [
+            { "id": "Oradea", "cost": 151},
+            { "id": "Arad", "cost": 140},
+            { "id": "Fagaras", "cost": 99},
+            { "id": "Rimnicu Vilcea", "cost": 80}
+        ]
+    },
+    {
+        "id": "Timisoara",
+        "h": 329,
+        "links": [
+            { "id": "Arad", "cost": 118},
+            { "id": "Lugoj", "cost": 111}
+        ]
+    },
+    {
+        "id": "Urziceni",
+        "h": 80,
+        "links": [
+            { "id": "Bucharest", "cost": 85},
+            { "id": "Vaslui", "cost": 142},
+            { "id": "Hirsova", "cost": 98}
+        ]
+    },
+    {
+        "id": "Vaslui",
+        "h": 199,
+        "links": [
+            { "id": "Urziceni", "cost": 142},
+            { "id": "Iasi", "cost": 92}
+        ]
+    },
+    {
+        "id": "Zerind",
+        "h": 374,
+        "links": [
+            { "id": "Arad", "cost": 75},
+            { "id": "Oradea", "cost": 71}
+        ]
+    }
+]

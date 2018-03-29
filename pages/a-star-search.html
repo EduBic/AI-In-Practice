@@ -29,40 +29,25 @@
 </head>
 
 <body>
-    <h1>Uniform-cost Search</h1>
+    <h1>A* Search</h1>
 
     <div id="description">
-        <p>Uniform-cost search expands the node n with the lowest path cost g(n)</p>
-        <p>Differences with Breath-first search:</p>
-        <ul>
-            <li>
-                The goal test is applied to a node when it is selected for 
-                expansion rather than when it is first generated
-            </li>
-            <li>
-                A test is added in case a better path is found to a node 
-                currently on the frontier
-            </li>
-        </ul>
-
-        <p>Notes</p>
-        <ul>
-            <li>
-                Step costs are nonnegative, hence path never get shorter as 
-                nodes are added
-            </li>
-            <li> 
-                Uniform-cost search does not care about the number of steps a 
-                path has, but only about their total cost. Therefore, it will 
-                get stuck in an infinite loop if there is a path with an 
-                infinite sequence of zero-cost actions
-            </li>
-        </ul>
+        <p>It evaluates nodes by combining g(n), the cost to reach the node, 
+            and h(n), the cost to get from the node to the goal:</p>
+        <p>f(n) = g(n) + h(n)</p>
+        <p>Since g(n) gives the path cost from the start node to node n, and 
+            h(n) is the estimated cost of the cheapest path from n to the goal, 
+            we have:
+        </p>
+        <p>f(n) = estimated cost of the cheapest solution through n.</p>
+        <p>The algorithm is identical to UNIFORM-COST-SEARCH except that A∗ 
+            uses g + h instead of g.</p>
     </div>
 
     <button id="startBtn" type="button">
-        Start Uniform-cost Search
+        Start A* Search
     </button>
+
     <svg id="tree-svg"></svg>
 
     <script src="./../js/tree-drawer.js"></script>

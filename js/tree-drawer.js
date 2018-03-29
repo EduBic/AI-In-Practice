@@ -51,7 +51,7 @@
         
     treeDrawer.nextNode = function(node) {
         if (currentNode == undefined) {
-            realTimeGraph = node
+            realTimeGraph = node;
         }
         currentNode = node;
         console.log("update pointer", currentNode);
@@ -71,14 +71,24 @@
         var nodes = root.descendants();
         var links = tree(root).links();
         
-        treeGroup.selectAll("path")
+        /*treeGroup.selectAll("path")
             .data(links)
             .enter()
             .append("path")
             .attr("class", "link")
             .attr("d", d3.linkVertical()
                 .x(function(d) { return d.x; })
-                .y(function(d) { return d.y; }))
+                .y(function(d) { return d.y; }))*/
+
+        treeGroup.selectAll("g.link")
+            .data(links)
+            .enter()
+            .append("g")
+            .attr("class", "link")
+            .append("path")
+            .attr("d", d3.linkVertical()
+                .x(function(d) { return d.x; })
+                .y(function(d) { return d.y; }));
         
         // take all g.node DOM elements
         // bind with nodes variable
@@ -108,6 +118,26 @@
             .text(function(d) {
                 return d.data.id; 
             });
+
+        d3.selectAll("g.link")
+            .append("text")
+            .attr('x', d => { 
+                return (d.source.x + d.target.x) / 2 + (d.source.x < d.target.x ? 8 : -8); 
+            })
+            .attr('y', d => { 
+                return (d.source.y + d.target.y) / 2; 
+            })
+			.text(d => {
+                if (d.source.data.links != undefined) {
+                    let link = d.source.data.links.filter(link => {
+                        return link.id === d.target.data.id;
+                    })[0];
+                    
+                    return link.cost;
+                } else {
+                    return "";
+                }
+            });	
     };
 
 }(window.treeDrawer = window.treeDrawer || {}, d3, document));

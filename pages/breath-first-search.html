@@ -16,7 +16,7 @@
             font: 12px sans-serif; 
         }
 
-        .link {
+        .link path {
             fill: none;
             stroke: #ccc;
             stroke-width: 2px;
@@ -46,31 +46,31 @@
 var emaGraph = [
     {
         id: "A",
-        adj: [{ id: "B"}]
+        links: [{ id: "B"}]
     },
     {
         id: "B",
-        adj: [{ id: "C"}, { id: "D"}]
+        links: [{ id: "C"}, { id: "D"}]
     },
     {
         id: "C",
-        adj: [{ id: "E"}]
+        links: [{ id: "E"}]
     },
     {
         id: "D",
-        adj: [{ id: "B"},{ id: "A"},{ id: "G"},{ id: "F"}]
+        links: [{ id: "B"},{ id: "A"},{ id: "G"},{ id: "F"}]
     },
     {
         id: "E",
-        adj: [{ id: "C"}, { id: "F"}]
+        links: [{ id: "C"}, { id: "F"}]
     },
     {
         id: "F",
-        adj: [{ id: "G"}]
+        links: [{ id: "G"}]
     },
     {
         id: "G",
-        adj: []
+        links: []
     }
 ]
 
@@ -80,7 +80,7 @@ var consoleData = [];
 // Add click listener
 document.getElementById("startBtn").addEventListener("click", function() {
     // init variables
-    let problem = new Problem("A", "F");
+    let problem = new Problem("A", "D");
     breathFirstSearch(problem, emaGraph);
 });
 
@@ -94,11 +94,11 @@ function exploreNode(graph, problem, frontier, explored) {
     explored.push(node);
 
     // check all children
-    node.adj.forEach(adjNode => {
+    node.links.forEach(link => {
         
         // get the node from adjList
         var child = graph.filter(n => {
-            return n.id === adjNode.id
+            return n.id === link.id
         })[0];
 
         // is already explored?
