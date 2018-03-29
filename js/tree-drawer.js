@@ -1,5 +1,9 @@
 
-// namespace treeDrawer
+/**
+ * namespace treeDrawer 
+ * works only if exist an <svg> tag into page
+ * with id="tree-svg"
+ */
 (function(treeDrawer, d3) {
 
     var width = 500,

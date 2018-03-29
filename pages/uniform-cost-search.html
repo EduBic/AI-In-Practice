@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test page</title>
+    <meta charset="utf-8" />
+    <style>
+        div.bar {
+            display: inline-block;
+            width: 20px;
+            height: 75px; /* We'll override height later */
+            background-color: teal;
+            margin-right: 1px;
+        }
+    </style>
+    <script src="./../js/utils.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+
+<body>
+    <h1>Uniform-cost Search</h1>
+
+    <div id="description">
+        <p>Uniform-cost search expands the node n with the lowest path cost g(n)</p>
+        <p>Differences with Breath-first search:</p>
+        <ul>
+            <li>
+                The goal test is applied to a node when it is selected for 
+                expansion rather than when it is first generated
+            </li>
+            <li>
+                A test is added in case a better path is found to a node 
+                currently on the frontier
+            </li>
+        </ul>
+
+        <p>Notes</p>
+        <ul>
+            <li>
+                Step costs are nonnegative, hence path never get shorter as 
+                nodes are added
+            </li>
+            <li> 
+                Uniform-cost search does not care about the number of steps a 
+                path has, but only about their total cost. Therefore, it will 
+                get stuck in an infinite loop if there is a path with an 
+                infinite sequence of zero-cost actions
+            </li>
+        </ul>
+    </div>
+
+    <svg id="tree-svg"></svg>
+
+<script>
+
+    var testGraph = [
+        {
+            id: "A",
+            links: [
+                {
+                    id: "B",
+                    cost: 10
+                },
+                {
+                    id: "C",
+                    cost: 20
+                },
+                {
+                    id: "D",
+                    cost: 100
+                }
+            ]
+        },
+        {
+            id: "B",
+            links: [{ id: "C", cost: 5}, { id: "D", cost: 20}]
+        },
+        {
+            id: "C",
+            links: [{ id: "D", cost: 8}]
+        },
+        {
+            id: "D",
+            links: []
+        }
+    ];
+
+    var romaniaGraph = [
+        { id: "Sibiu", links: [
+            {id: "Fagaras", cost: 99}, 
+            {id: "Rimnuicu", cost: 80}]
+        },
+        { id: "Fagaras", links: [
+            {id: "Bucharest", cost: 211}]
+        },
+        { id: "Rimnuicu", links: [
+            {id: "Pitesti", cost: 97}
+        ]},
+        { id: "Pitesti", links: [
+            {id: "Bucharest", cost: 101}
+        ]},
+        { id: "Bucharest", links: []}
+    ];
+    
+    var problem = new Problem("A", "D");
+    var probRomania = new Problem("Sibiu", "Bucharest");
+
+    // need lowestPathCost -> keep frontier order
+    uniformCostSearch(probRomania, romaniaGraph);
+
+    function uniformCostSearch(problem, graph) {
+        let root;
+
+        for (let i = 0; i < graph.length; i++) {
+            if (graph[i].id === problem.initState) {
+                root = graph[i];
+                i = graph.length;   // exit from loop
+            }
+        }
+
+        root.pathCost = 0;
+
+        let frontier = [root];  // priority queue order
+        let explored = [];
+
+        // loop on all nodes found
+        while (frontier.length > 0) {
+            // take the node with less cost
+            let node = frontier.shift();
+            console.log("Visiting: ", node);
+            
+            if (node.id === problem.goalState) {
+                console.log("FOUND A SOLUTION");
+            }
+            
+            explored.push(node);
+
+            // take children from current node
+            node.links.forEach(link => {
+                //console.log("Travel link: ", link);
+
+                let child = graph.filter(n => {
+                    return n.id === link.id
+                })[0];
+
+                let childNode = Object.assign({}, child);
+                // compute cost for travelling on this node
+                childNode.pathCost = node.pathCost + link.cost;
+
+                let childPathCost = childNode.pathCost;
+                
+                let isChildExplored = explored.filter(n => {
+                    return n.id === childNode.id;
+                });
+
+                let childInFrontier = frontier.filter(n => {
+                    return n.id === childNode.id;
+                });
+
+                if (isChildExplored.length === 0
+                    && childInFrontier.length === 0) {
+                    // new node found
+                        
+                    // FIXME: keep the priority queue
+                    frontier.push(childNode);
+                    frontier.sort( (a, b) => {
+                        return a.pathCost - b.pathCost;
+                    });
+                    //console.log("Head frontier", frontier[0]);
+
+                } else if (childInFrontier.length === 1) {
+                    //console.log("ChildInFrontier: ", childInFrontier[0].pathCost,
+                    //            "ChildNode: ", childNode.pathCost);
+                    if (childInFrontier[0].pathCost > childNode.pathCost) {
+                        // remove childInFrontier and push childNode in the 
+                        // same position of frontier array
+                        let indexNode = frontier.indexOf(childInFrontier[0]);
+                        let removedNode = frontier.splice(indexNode, 1, childNode);
+                        console.log("Substituted node:", removedNode);
+                    }
+                }
+
+            });
+
+        }
+    };
+
+</script>
+        
+        
+</body>
+
+</html> 
