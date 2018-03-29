@@ -20,11 +20,16 @@
             stroke-width: 2px;
         }
 
+        .link text {
+            font-size: .75em;
+        }
+
         svg {
           border: 1px solid black;
         }
     </style>
     <script src="./../js/utils.js"></script>
+    <script type="text/javascript" src="data/romania.json"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
 </head>
 
@@ -69,27 +74,12 @@
 
 <script>
 
-    var romaniaGraph = [
-        { id: "Sibiu", links: [
-            {id: "Fagaras", cost: 99}, 
-            {id: "Rimnuicu", cost: 80}]
-        },
-        { id: "Fagaras", links: [
-            {id: "Bucharest", cost: 211}]
-        },
-        { id: "Rimnuicu", links: [
-            {id: "Pitesti", cost: 97}
-        ]},
-        { id: "Pitesti", links: [
-            {id: "Bucharest", cost: 101}
-        ]},
-        { id: "Bucharest", links: []}
-    ];
-
     document.getElementById("startBtn").addEventListener("click", function() {
         // init variables
-        let problem = new Problem("Sibiu", "Bucharest");
-        uniformCostSearch(problem, romaniaGraph);    
+        d3.json("data/romania.json", graph => {
+            let problem = new Problem("Arad", "Bucharest");
+            uniformCostSearch(problem, graph);
+        }); 
     });
 
     function uniformCostSearch(problem, graph) {

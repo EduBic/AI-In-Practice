@@ -1,0 +1,31 @@
+[
+    { 
+        "id": "Sibiu", 
+        "links": [
+            {"id": "Fagaras", "cost": 99}, 
+            {"id": "Rimnuicu", "cost": 80}
+        ]
+    },
+    { 
+        "id": "Fagaras", 
+        "links": [
+            {"id": "Bucharest", "cost": 211}
+        ]
+    },
+    { 
+        "id": "Rimnuicu", 
+        "links": [
+            {"id": "Pitesti", "cost": 97}
+        ]
+    },
+    { 
+        "id": "Pitesti", 
+        "links": [
+            {"id": "Bucharest", "cost": 101}
+        ]
+    },
+    { 
+        "id": "Bucharest", 
+        "links": []
+    }
+]

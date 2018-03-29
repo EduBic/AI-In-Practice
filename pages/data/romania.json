@@ -46,7 +46,7 @@
         "id": "Fagaras",
         "h": 176,
         "links": [
-            { "id": "Sibiu", "cost": 99}
+            { "id": "Sibiu", "cost": 99},
             { "id": "Bucharest", "cost": 211}
         ]
     },
