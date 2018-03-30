@@ -6,8 +6,18 @@
  */
 (function(treeDrawer, d3) {
 
-    var width = 500,
-        height = 500;
+    // global setting for svg
+    // https://bl.ocks.org/mbostock/3019563
+    let margin = {
+        top: 20, right: 20, // for labels 
+        bottom: 20, left: 20
+    };
+
+    let realW = 500,
+        realH = 500;
+
+    let width = realW - margin.left - margin.right,
+        height = realH - margin.top - margin.bottom;
 
     function onPanZoom() {
         d3.select("g#treeG")
@@ -18,8 +28,8 @@
 
 
     var svg = d3.select("#tree-svg")
-          .attr("width", width)
-          .attr("height", height)
+          .attr("width", realW)
+          .attr("height", realH)
           .call(d3.zoom().on("zoom", onPanZoom));
 
     var tree = d3.tree()
@@ -65,7 +75,10 @@
             .remove()
         
         var treeGroup = svg.append("g")
-                            .attr("id", "treeG");
+                            .attr("id", "treeG")
+                            .attr("transform", "translate(" + 
+                                margin.left + "," +
+                                margin.top + ")");
         
         var root = d3.hierarchy(rawData);
         var nodes = root.descendants();
