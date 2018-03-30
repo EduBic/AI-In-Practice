@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>D3 Scatterplot</title>
+    <meta charset="utf-8" />
+    <style>
+        text.label {
+            font-family: sans-serif;
+            font-size: .8em;
+            fill: #bbb;
+        }
+        svg {
+            border: 1px solid black;
+        }
+    </style>
+
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+
+<body>
+    <h1>Scatterplot example with D3</h1>
+
+<script>
+
+// global setting for svg
+let margin = {
+    top: 20, right: 20 * 3, // for labels 
+    bottom: 20, left: 20
+};
+
+let realW = 500,
+    realH = 300;
+
+let w = realW - margin.left - margin.right,
+    h = realH - margin.top - margin.bottom;
+
+// utility functions
+let parseTime = d3.timeParse("%m/%d/%y");
+let formatTime = d3.timeFormat("%b %e");
+
+let rowConverter = function(d) {
+    return { 
+        Date: parseTime(d.Date),
+        Amount: parseInt(d.Amount)
+    };
+}
+
+d3.csv("../data/date.csv", rowConverter, dataset => {
+    
+    let xScale = d3.scaleTime()
+        .domain([
+            d3.min(dataset, d => { return d.Date; }),
+            d3.max(dataset, d => { return d.Date; })
+        ])
+        .range([0, w]);
+
+    let yScale = d3.scaleLinear()
+        .domain([
+            d3.min(dataset, d => { return d.Amount; }),
+            d3.max(dataset, d => { return d.Amount; })
+        ])
+        .range([h, 0]);
+    
+    let svg = d3.select("body")
+        .append("svg")
+        .attr("width", realW)
+        .attr("height", realH)
+        .append("g")
+        .attr("transform", d => {
+            return "translate(" +
+                margin.left + "," +
+                margin.top + ")";
+        });
+
+    // labels
+    svg.selectAll("text")
+        .data(dataset)
+        .enter()
+        .append("text")
+        .text(d => {
+            return formatTime(d.Date);
+        })
+        .attr("class", "label")
+        .attr("x", d => {
+            return xScale(d.Date) + 4;
+        })
+        .attr("y", d => {
+            return yScale(d.Amount) + 4;
+        });
+
+        // points
+    svg.selectAll("circle")
+        .data(dataset)
+        .enter()
+        .append("circle")
+        .attr("cx", d => {
+            return xScale(d.Date);
+        })
+        .attr("cy", d => {
+            return yScale(d.Amount);
+        })
+        .attr("r", 2);
+
+});
+
+
+</script>
+        
+        
+</body>
+
+</html> 

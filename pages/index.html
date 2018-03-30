@@ -33,6 +33,11 @@
 
     <h2>Tecnologies used</h2>
 
+    <ul>
+        <li><a href="d3/scatterplot.html">Scatterplot example</a></li>
+        <li><a href="d3/time-scale.html">Time scale example</a></li>
+    </ul>
+
     <div id="d3-summary">
         <h3>D3.js functions summary</h3>
 
@@ -62,7 +67,13 @@
             <p>d3.csv("fileName.csv",function(error,data) { ... }) = import data from a csv file</p>
 
             <!-- Scale data -->
-            <p>d3.scale.linear().domain([a, d]).range([b, c]) = scale the value from domain (large) to range (smaller)</p>
+            <p>d3.scaleLinear().domain([a, d]).range([b, c]) = scale the value from domain (large) to range (smaller)</p>
+            <p>d3.scaleLinear().nice() = round scale points for human</p>
+            <p>d3.scaleLinear().rangeRound() = in place of range, it will scale in the rounded range</p>
+            <p>d3.scaleLinear().clamp(true) = excessive values will be rounded to the range’s low or high value</p>
+
+            <p>d3.max(dataset, function(d)) = found the max value from the returned value of function(d)</p>
+            <p>d3.min(dataset, function(d)) = same as top but now is minimun value</p>
 
             <!-- Binding -->
             <p>domNodes.data(data) = bind data with domNodes selected</p>
@@ -78,6 +89,14 @@
                     <li>remove() = remove DOM node with no data associated</li>
                 </ul>
             </p>
+
+            <!-- Axes -->
+            <p>d3.axisBottom(scale) = create an axis with ticks label on bottom, scale define the scale of axis</p>
+            <p>axisBottom &amp; axisTop = are horizontal axes</p>
+            <p>axisTop &amp; axisBottom = are vertical axes</p>
+            <p>axis.scale(x) = set scale x to axis</p>
+            <p>axis.ticks(n) = set a desirable min value of ticks on axis</p>
+            <p>axis.tickValues([t1, t2, ...]) = set manually the ticks on axis</p>
 
 
 

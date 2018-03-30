@@ -72,9 +72,11 @@
     ];
 
     document.getElementById("startBtn").addEventListener("click", function() {
-        // init variables
-        let problem = new Problem("Sibiu", "Bucharest");
-        uniformCostSearch(problem, romaniaGraph);    
+        // init variables 
+        d3.json("data/romania.json", graph => {
+            let problem = new Problem("Sibiu", "Bucharest");
+            uniformCostSearch(problem, romaniaGraph); 
+        });   
     });
 
     function uniformCostSearch(problem, graph) {
@@ -118,6 +120,7 @@
 
                 let childNode = Object.assign({}, child);
                 // compute cost for travelling on this node
+                // TODO: add A* estimate function
                 childNode.pathCost = node.pathCost + link.cost;
 
                 let childPathCost = childNode.pathCost;
