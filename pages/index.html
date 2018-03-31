@@ -29,6 +29,7 @@
 
     <h3>Examples</h3>
     <ul>
+        <li><a href="d3/bar-chart.html">Bar chart</a></li>
         <li><a href="d3/scatterplot.html">Scatterplot</a></li>
         <li><a href="d3/time-scale.html">Time scale</a></li>
     </ul>
@@ -77,6 +78,7 @@
 
             <p>d3.max(dataset, function(d)) = found the max value from the returned value of function(d)</p>
             <p>d3.min(dataset, function(d)) = same as top but now is minimun value</p>
+            <p> d3.range(l) = quickly generate an array of sequential numbers</p>
 
             <!-- Binding -->
             <p>domNodes.data(data) = bind data with domNodes selected</p>
@@ -101,7 +103,19 @@
             <p>axis.ticks(n) = set a desirable min value of ticks on axis</p>
             <p>axis.tickValues([t1, t2, ...]) = set manually the ticks on axis</p>
 
-
+            <!-- Animation -->
+            <p>nodesToUpdate.transition().YOUR_UPDATE = generate transtion from previous params to new params</p>
+            <p>.transition().duration(n) = set a duration n in milliseconds of the transition</p>
+            <p>.transition().ease(easeMode) = set easeMode as ease transtion:
+                <ul>
+                    <li>d3.easeLinear</li>
+                    <li>d3.easeCircleIn</li>
+                    <li>d3.easeElasticOut</li>
+                    <li>d3.easeBounceOut</li>
+                    <li><a href="https://bl.ocks.org/mbostock/248bac3b8e354a9103c4">More here</a></li>
+                    </ul>
+            </p>
+            <p>.transition().on("start" || "end", fun) = execute fun on start/end of transition</p>
 
         </div>
 
