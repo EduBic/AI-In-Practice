@@ -30,6 +30,8 @@
 
     <h1>Bar chart</h1>
     <button id="clickableBtn" type="button">Update bar chart</button>
+    <button id="add" type="button">Add element</button>
+    <button id="del" type="button">Del element</button>
 
 <script>
 
@@ -62,67 +64,142 @@ let yScale = d3.scaleLinear()
     .domain([0, d3.max(dataset)])
     .range([0, h]);
 
-// add listener
-d3.select("#clickableBtn")
-    .on("click", _ => {
-        /*let dataset = [ 11, 12, 15, 20, 18, 17, 16, 18, 23, 25,
-                    5, 10, 13, 19, 21, 25, 22, 18, 15, 13 ];*/
+
+function updateScales() {
+    xScale.domain(d3.range(dataset.length));
+    yScale.domain([0, d3.max(dataset)]);	
+}
+
+function updateBars(dur = 500) {
+    let bars = d3.select("#inner-svg")
+            .selectAll("rect")
+            .data(dataset);
+
+    bars.enter()
+        .append("rect")
+        .attr("x", w)
+        .attr("y", d => {
+            return h - yScale(d);
+        })
+        .attr("width", xScale.bandwidth())
+        .attr("height", d => {
+            return yScale(d);
+        })
+        .attr("fill", d => {
+            return "rgb(0, 0, " + Math.round(d * 10) + ")";
+        })
+        // Update…
+        .merge(bars) 
+        .transition()
+        .duration(dur)
+        .attr("x", (d, i) => { return xScale(i); })
+        .attr("y", d => { return h - yScale(d); })
+        .attr("width", xScale.bandwidth())
+        .attr("height", d => { return yScale(d); });
+
+    // Remove if it is needed
+    bars.exit()
+        // animate -> go outside svg
+        .transition()
+        .duration(dur)
+        .attr("x", w)
+        // brutally remove from DOM
+        .remove();
     
-        let maxValue = 25;  // magic number
-        let numValues = this.dataset.length;
-        let dataset = []; //Initialize empty array
-        for (var i = 0; i < numValues; i++) { //Loop numValues times
-            var newNumber = Math.floor(Math.random() * maxValue); //New random integer (0-24)
-            dataset.push(newNumber); //Add new number to array
+}
+
+function updateLabels(dur = 500) {
+    let labels = d3.select("#inner-svg")
+        .selectAll("text")
+        .data(dataset);
+
+    // add new label to other labels
+    labels.enter()
+        .append("text")
+        .text(d => { return d; })
+        .attr("x", w + xScale.bandwidth() / 2)
+        .attr("y", function(d) {
+            return d === 1 || d === 0 ?
+                h - yScale(d) - 4 : h - yScale(d) + 14;
+        })
+        .attr("class", d => {
+            return d === 1 || d === 0 ? 
+                "inner-bar-text" : "bar-text";
+        })
+        // update others labels
+        .merge(labels)
+        .text(d => { return d; })
+        .transition()
+        .duration(dur)
+        .attr("x", (d, i) => {
+            return xScale(i) + xScale.bandwidth() / 2;
+        })
+        .attr("y", function(d) {
+            return d === 1 || d === 0 ?
+                h - yScale(d) - 4 : h - yScale(d) + 14;
+        })
+        .attr("class", d => {
+            return d === 1 || d === 0 ? 
+                "inner-bar-text" : "bar-text";
+        });
+
+    labels.exit()
+        .transition()
+        .duration(dur)
+        .attr("x", w + xScale.bandwidth() / 2)
+        .remove()
+}
+
+// add listener
+d3.select("#add")
+    .on("click", function() {
+        //Add one new value to dataset
+        let maxValue = 25;
+        let newNumber = Math.floor(Math.random() * maxValue);
+        dataset.push(newNumber);
+
+        updateScales();
+        updateBars();
+        updateLabels();
+    });
+    
+d3.select("#del")
+    .on("click", function() {
+        // remove last element
+        dataset.pop();
+
+        updateScales();
+        updateBars();
+        updateLabels();
+
+    });
+
+d3.select("#clickableBtn")
+    .on("click", function() {
+        
+        let maxValue = 35;  // magic number
+        let numValues = dataset.length;
+        dataset = [];       // reset previous dataset
+        for (let i = 0; i < numValues; i++) { 
+            let newNumber = Math.floor(Math.random() * maxValue);
+            dataset.push(newNumber);
         }
 
-        //Update scale domain
-        yScale.domain([0, d3.max(dataset)]);
+        updateScales();
 
         let dur = 1000;
 
-        //Update all rects
-        svg.selectAll("rect")
-            .data(dataset)
-            .transition()
-            .delay( (d, i) => {
-                // maximum delay for last element is 1 second
-                return i / dataset.length * 1000;    // dynamic approch
-            })
-            .duration(dur)
-            .ease(d3.easeLinear)
-            .attr("y", function(d) {
-                return h - yScale(d);
-            })
-            .attr("height", function(d) {
-                return yScale(d);
-            })
-            .attr("fill", d => {
-                return "rgb(0, 0, " + Math.round(d * 10) + ")";
-            });
+        updateBars(dur);
+        updateLabels(dur);
 
-        svg.selectAll("text")
-            .data(dataset)
-            .transition()
-            .delay( (d, i) => {
-                return i / dataset.length * 1000;
-            })
-            .duration(dur)
-            .ease(d3.easeLinear)
-            .text(function(d) {
-                return d;
-            })
-            .attr("x", function(d, i) {
-                return xScale(i) + xScale.bandwidth() / 2;
-            })
-            .attr("y", function(d) {
-                return d === 1 || d === 0 ?
-                    h - yScale(d) - 4 : h - yScale(d) + 14;
-            })
-            .attr("class", d => {
-                return d === 1 || d === 0 ? 
-                    "inner-bar-text" : "bar-text";
-            });
+        //     .transition()
+        //     .delay( (d, i) => {
+        //         // maximum delay for last element is 1 second
+        //         return i / dataset.length * 1000;    // dynamic approch
+        //     })
+        //     .duration(dur)
+        //     .ease(d3.easeLinear)
+
     });
 
 
@@ -138,7 +215,7 @@ let svg = d3.select("body")
                             margin.top + ")");
 
 function drawBars(data) {
-
+    
     svg.selectAll("rect")
         .data(data)
         .enter()
