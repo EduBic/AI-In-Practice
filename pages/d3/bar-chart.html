@@ -5,13 +5,13 @@
 		<title>D3: A simple bar chart</title>
 		<script src="https://d3js.org/d3.v4.min.js"></script>
         
-        <style type="text/css">
-			/* No style rules here yet */		
+        <style type="text/css">		
             svg {
                 border: 1px solid black;
             }
 
             text.bar-text {
+                pointer-events: none; /* Avoid that text take mouseover event*/
                 font-family: sans-serif;
                 font-size: .8em;
                 fill: white;
@@ -23,15 +23,63 @@
                 fill: black;
                 text-anchor: middle;
             }
+            rect:hover {
+                fill: orange;
+                -moz-transition: all 0.25s;
+                -o-transition: all 0.25s;
+                -webkit-transition: all 0.25s;
+                transition: all 0.25s;
+            }
+            #tooltip {
+                position: absolute;
+                width: 200px;
+                height: auto;
+                padding: 10px;
+                background-color: white;
+                -webkit-border-radius: 10px;
+                -moz-border-radius: 10px;
+                border-radius: 10px;
+                -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+                -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+                box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+                pointer-events: none;
+            }
+            #tooltip.hidden {
+                display: none;
+            }
+            #tooltip p {
+                margin: 0;
+                font-family: sans-serif;
+                font-size: 1em;
+                line-height: 20px;
+            }
+            
 		</style>
     </head>
     
 <body>
 
     <h1>Bar chart</h1>
+
+    <div id="descDataBinding">
+        <ul>
+        <li>bind the dataset with DOM elements using: 
+            bindElems = d3.selectAll("elem").data(dataset)</li>
+        <li>append element to bindElems with bindElems.enter().append()</li>
+        <li>and merge() that with the other already added</li>
+        <li>use bindElems.exit().remove() for remove element removed</li>
+        </ul>
+    </div>
+
     <button id="clickableBtn" type="button">Update bar chart</button>
     <button id="add" type="button">Add element</button>
     <button id="del" type="button">Del element</button>
+
+    <!-- Custom HTML Tooltip  -->
+    <div id="tooltip" class="hidden">
+        <p><strong>Important Label Heading</strong></p>
+        <p><span id="value">100</span>%</p>
+    </div>
 
 <script>
 
@@ -214,9 +262,9 @@ let svg = d3.select("body")
                             margin.left + "," +
                             margin.top + ")");
 
-function drawBars(data) {
+function drawBars(svg, data) {
     
-    svg.selectAll("rect")
+    return svg.selectAll("rect")
         .data(data)
         .enter()
         .append("rect")
@@ -226,12 +274,15 @@ function drawBars(data) {
         .attr("height", d => { return yScale(d); })
         .attr("fill", d => {
             return "rgb(0, 0, " + Math.round(d * 10) + ")";
-        });
+        })
+        // append tooltip -> simple way
+        // .append("title")
+        // .text(d => { return "This value is " + d; });
 }
 
-function drawLabels(data) {
+function drawLabels(svg, data) {
 
-    svg.selectAll("text")
+    return svg.selectAll("text")
         .data(data)
         .enter()
         .append("text")
@@ -245,8 +296,100 @@ function drawLabels(data) {
 
 
 // init run
-drawBars(dataset);
-drawLabels(dataset);
+drawBars(svg, dataset);
+drawLabels(svg, dataset);
+
+
+
+// ADD INTERACTIVITY
+var sortChart = false;
+
+function sortBars() {
+    sortChart = !sortChart;
+    let dur = 1000;
+    
+    d3.select("#inner-svg2")
+        .selectAll("rect")
+        .sort(function(a, b) {
+            if (sortChart) return d3.ascending(a, b);
+            else return d3.descending(a, b);
+        })
+        .transition()
+        .duration(dur)
+        .delay(function(d, i) {
+            return i * 50;
+        })
+        .attr("x", function(d, i) {
+            return xScale(i);
+        });
+    
+    d3.select("#inner-svg2")
+        .selectAll("text")
+        .sort( function(a, b) { 
+            if (sortChart) return d3.ascending(a, b);
+            else return d3.descending(a, b);
+         })
+        .transition()
+        .duration(dur)
+        .delay(function(d, i) {
+            return i * 50;
+        })
+        .attr("x", (d, i) => {
+            return xScale(i) + xScale.bandwidth() / 2;
+        })
+}
+
+let svg2 = d3.select("body")
+    .append("svg")
+    .attr("width", realW)
+    .attr("height", realH)
+    .append("g")
+    .attr("id", "inner-svg2")
+    .attr("transform", "translate(" +
+                    margin.left + "," +
+                    margin.top + ")");
+
+drawBars(svg2, dataset)
+    /*.on("mouseover", function() {
+        d3.select(this)
+            .transition()
+            .duration(100)
+            .attr("fill", "orange");
+    })
+    .on("mouseout", function(d) {
+        d3.select(this)
+            .transition()
+            .duration(100)
+            .attr("fill", "rgb(0, 0, " + (d * 10) + ")");
+    })*/
+    .on("mouseover", function(d) {
+
+        let svgRect = d3.select("#inner-svg2").node() 
+            // the equivalent of: document.getElementById("inner-svg2")
+            .getBoundingClientRect();
+
+        let xPosition = parseFloat(d3.select(this).attr("x")) 
+            + xScale.bandwidth() / 2;
+        let yPosition = parseFloat(d3.select(this).attr("y")) 
+            / 2 + h / 2 + svgRect.top;        
+
+        //Update the tooltip position and value
+        d3.select("#tooltip")
+            .style("left", xPosition + "px")
+            .style("top", yPosition + "px")
+            .select("#value")
+            .text(d);
+
+        d3.select("#tooltip").classed("hidden", false);
+
+    })
+    .on("mouseout", function() {
+        d3.select("#tooltip")
+            .classed("hidden", true);
+    })
+    .on("click", function() { sortBars(); });
+
+drawLabels(svg2, dataset);
 
 
 </script>
