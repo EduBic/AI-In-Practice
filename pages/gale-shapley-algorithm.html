@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    
+    <style>
+        svg {
+            border: 1px solid black
+        }
+    </style>
+    
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="../js/network-drawer.js"></script>
+
+</head>
+
+<body>
+
+    <h1>Gale Shapley Algorithm</h1>
+
+    <p>The entities (light blue nodes) are:</p>
+    <ul>
+        <li>Rover1</li>
+        <li>Rover2</li>
+        <li>Rover3</li>
+    </ul>
+    <p>And they have to be match with resources (green nodes):</p>
+    <ul>
+        <li>Downlink</li>
+        <li>Picture</li>
+        <li>Drill</li>
+    </ul>
+
+    <svg id="graph"></svg>
+
+        
+<script>
+
+let dataset = {
+    rovers: [
+        { 
+            id: 0,
+            name: "Rover1",
+            pref: [
+                "Downlink",
+                "Picture",
+                "Drill"
+            ]
+        },
+        { 
+            id: 1,
+            name: "Rover2",
+            pref: [
+                "Picture",
+                "Downlink",
+                "Drill"
+            ]
+        },
+        { 
+            id: 2, 
+            name: "Rover3",
+            pref: [
+                "Downlink",
+                "Picture",
+                "Drill"
+            ]
+        }
+    ],
+    resources: [
+        {
+            name: "Downlink",
+            pref: [
+                2, 1, 3
+            ]
+        },
+        {
+            name: "Picture",
+            pref: [
+                1, 2, 3
+            ]
+        },
+        {
+            name: "Drill",
+            pref: [
+                1, 2, 3
+            ]
+        }
+    ]
+};
+
+// array
+let freeEntity = [];
+// hash table
+let freeResources = {};
+
+dataset.rovers.forEach(x => {
+    freeEntity.push(x);
+    x.selection = null;
+});
+
+
+let idCounter = 3;
+
+dataset.resources.forEach(x => {
+    freeResources[x.name] = x
+    x.isFree = true;
+    x.id = idCounter++;
+});
+
+netDrawer.init("graph", dataset.rovers.concat(dataset.resources));
+netDrawer.startNodes();
+
+//console.log(freeEntity);
+//console.log(freeResources);
+
+galeShapleyAlg();
+
+function galeShapleyAlg() {
+    while (freeEntity.length > 0) {
+
+        let entity = freeEntity.shift();
+        let prefPointer = 0;
+
+        while (prefPointer < dataset.resources.length) {
+
+            let preference = entity.pref[prefPointer];
+            let resource = freeResources[preference];
+
+            if (resource.isFree) {
+                resource.isFree = false;
+                entity.selection = resource;
+                resource.selection = entity.id;
+
+                netDrawer.addLink(entity.id, resource.id);
+                //console.log(entity.id, "Select: ", entity.selection);
+                
+                // exit loop
+                prefPointer = dataset.resources.length;
+            } else {
+                // next preference
+                prefPointer++;
+            }
+
+        }
+    }
+}
+
+console.log("Rovers", dataset.rovers);
+console.log("Resources", dataset.resources);
+
+
+
+
+</script>
+        
+        
+</body>
+
+</html> 
