@@ -33,7 +33,9 @@
         this.startLinks();
     }
 
-    netDrawer.init = function(svgName, ns = [], ls = []) {
+    netDrawer.init = function(svgName, ns = [], 
+            ls = [], withIsolate = true) {
+                
         nodes = ns;
         links = ls;
 
@@ -48,18 +50,26 @@
 
         simulation = d3.forceSimulation(nodes)
             .force("charge", d3.forceManyBody().strength(-40))
-            .force("link", d3.forceLink(links))
-            .force("y", d3.forceY(realH / 2))
-            //.force("x", d3.forceCenterX())
-            .force("entities", isolate(
-                d3.forceX(realW / 4),
-                function(d) { return d.id < 3; }))
-            .force("resources", isolate(
-                d3.forceX(realW * 3/4),
-                function(d) { return d.id >= 3; }))
-            //.force("center", d3.forceCenter().x(w/2).y(h/2))
-            .alphaTarget(1)
-            .on("tick", ticked);
+            .force("link", d3.forceLink(links));
+
+        if (withIsolate) {
+
+            simulation.force("y", d3.forceY(realH / 2))
+                .force("entities", isolate(
+                    d3.forceX(realW / 4),
+                    function(d) { return d.id < 3; }))
+                .force("resources", isolate(
+                    d3.forceX(realW * 3/4),
+                    function(d) { return d.id >= 3; }))
+                .alphaTarget(1);
+
+        } else {
+            simulation.force("center", d3.forceCenter(
+                realW / 2, realH / 2
+            ));
+        }
+        
+        simulation.on("tick", ticked);
 
         link = g.append("g")
             // style for link

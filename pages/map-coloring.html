@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    
+    <style>
+        svg {
+            border: 1px solid black;
+        }
+    </style>
+    
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="../js/network-drawer.js"></script>
+
+</head>
+
+<body>
+
+    <p>Regions variables: X = {WA, NT, Q, NSW, V, SA, T}</p>
+    <p>Domain for each variables: D_i = {red, green, blue}</p>
+    <p>
+        Constraints: C = {SA &ne; WA, SA &ne; NT, SA &ne; Q, SA &ne; NSW, 
+        SA &ne; V, WA &ne; NT, NT &ne; Q, Q &ne; NSW, NSW &ne; V}
+    </p>
+
+    <svg id="constGraph"></svg>
+        
+<script>
+
+let OpEnum = Object.freeze(
+    { NOT_EQUAL: {} }
+);
+
+let dataset = {
+    variables: [
+        "WA", "NT", "Q", "NSW", "V", "SA", "T"
+    ],
+    constraints: [
+        {
+            scope: ["SA", "WA"],
+            rel: OpEnum.NOT_EQUAL
+        },
+        {
+            scope: ["SA", "NT"],
+            rel: OpEnum.NOT_EQUAL
+        }, 
+        { 
+            scope: ["SA", "Q"],
+            rel: OpEnum.NOT_EQUAL
+        }, 
+        {
+            scope: ["SA", "NSW"],
+            rel: OpEnum.NOT_EQUAL
+        }, 
+        { 
+            scope: ["SA", "V"],
+            rel: OpEnum.NOT_EQUAL
+        }, 
+        {
+            scope: ["WA", "NT"],
+            rel: OpEnum.NOT_EQUAL
+        }, 
+        {
+            scope: ["NT", "Q"],
+            rel: OpEnum.NOT_EQUAL
+        }, 
+        {
+            scope: ["Q", "NSW"],
+            rel: OpEnum.NOT_EQUAL
+        }, 
+        {
+            scope: ["NSW", "V"],
+            rel: OpEnum.NOT_EQUAL
+        }
+    ] 
+};
+
+let constGraph = {
+    nodes: [],
+    edges: []
+};
+
+let varCountId = 0;
+
+dataset.variables.forEach(v => {
+    constGraph.nodes.push({
+        name: v,
+        id: varCountId++
+    });
+});
+
+dataset.constraints.forEach(c => {
+    let targetName = c.scope[0];
+    let sourceName = c.scope[1];
+
+    let sourceId = constGraph.nodes.find(x => {
+        return x.name === sourceName
+    });
+    let targetId = constGraph.nodes.find(x => {
+        return x.name === targetName
+    });
+
+    constGraph.edges.push({
+        source: sourceId,
+        target: targetId
+    });
+})
+
+console.log(constGraph);
+netDrawer.init("constGraph", 
+    constGraph.nodes, constGraph.edges, false);
+
+netDrawer.startNodes();
+netDrawer.startLinks();
+
+</script>
+        
+        
+</body>
+
+</html> 
