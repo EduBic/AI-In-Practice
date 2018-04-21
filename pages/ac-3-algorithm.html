@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    
+    <link rel="stylesheet" type="text/css" href="../style/tree-style.css">
+    <style>
+        svg {
+          border: 1px solid black;
+        }
+    </style>
+    
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+
+<body>
+
+    <button id="ac3Btn" type="button">Execute AC-3 algorithm</button>
+    <div>
+        <svg id="ac3tree"></svg>
+    </div>
+
+<script>
+
+let OpEnum = Object.freeze(
+    { NOT_EQUAL: {} }
+);
+
+let dataset = {
+    variables: [
+        "WA", "NT", "Q", "NSW", "V", "SA", "T"
+    ],
+    constraints: [
+        {
+            scope: ["SA", "WA"],
+            rel: OpEnum.NOT_EQUAL
+        },
+        {
+            scope: ["SA", "NT"],
+            rel: OpEnum.NOT_EQUAL
+        }, 
+        { 
+            scope: ["SA", "Q"],
+            rel: OpEnum.NOT_EQUAL
+        }, 
+        {
+            scope: ["SA", "NSW"],
+            rel: OpEnum.NOT_EQUAL
+        }, 
+        { 
+            scope: ["SA", "V"],
+            rel: OpEnum.NOT_EQUAL
+        }, 
+        {
+            scope: ["WA", "NT"],
+            rel: OpEnum.NOT_EQUAL
+        }, 
+        {
+            scope: ["NT", "Q"],
+            rel: OpEnum.NOT_EQUAL
+        }, 
+        {
+            scope: ["Q", "NSW"],
+            rel: OpEnum.NOT_EQUAL
+        }, 
+        {
+            scope: ["NSW", "V"],
+            rel: OpEnum.NOT_EQUAL
+        }
+    ] 
+};
+
+// NB cannot use map coloring dataset for check ac-3
+document.getElementById("ac3Btn")
+        .addEventListener("click", () => {
+
+    let csp = {
+        variables: [],
+        domains: [],
+        constraints: []
+    };
+
+    let varCount = 0;
+
+    csp.variables = dataset.variables;
+
+    dataset.variables.forEach(v => {
+        csp.domains.push(["red", "green", "blue"])
+    });
+
+    dataset.constraints.forEach(c => {
+        let sourceName = c.scope[1];
+        let targetName = c.scope[0];
+
+        let sourceIndex = undefined;
+        let targetIndex = undefined;
+
+        for (let i = 0; i < csp.variables.length; i++) {
+            let value = csp.variables[i];
+
+            // doesn't manage loop arc
+            if (value === targetName) {
+                targetIndex = i;
+                if (sourceIndex !== undefined) continue;
+
+            } else if (value === sourceName) {
+                sourceIndex = i;
+                if (targetIndex !== undefined) continue;
+            }
+        }
+
+        csp.constraints.push({
+            source: sourceIndex,
+            target: targetIndex
+        });
+    })
+
+    console.log("CSP", csp);
+
+    let thereInconsistency = ac3(csp);
+
+    // if (thereInconsistency) {
+    //     console.log("Inconsistency found!");
+    // } else {
+    //     console.log("Completed with success");
+    // }
+
+});
+
+function ac3(csp) {
+
+    let queue = Object.assign([], csp.constraints);
+
+    while (queue.length > 0) {
+        let constraint = queue.shift();
+
+        let constSource = constraint.source;
+        let constTarget = constraint.target;
+
+        if (reviseConst(csp, constSource, constTarget)) {
+            if (csp.domains[constSource].length === 0) {
+                return false;
+            } 
+
+            let neighborsSource = [];
+            
+            csp.constraints.forEach(c => {
+                // tutti i vicini tranne constTarget
+                if ((c.source === constSource && c.target !== constTarget) || 
+                    (c.target === constSource && c.source !== constTarget)) {
+                    queue.push(Object.assign({}, c));
+                }
+            })
+        }
+    }
+
+    return true;
+}
+
+function reviseConst(csp, sourceIndex, targetIndex) {
+    let revised = false;
+
+    sourceDomain = csp.domains[sourceIndex];
+    targetDomain = csp.domains[targetIndex];
+
+    for (let i = 0; i < sourceDomain.length; i++) {
+        // SourceValue could be "red", "green" or "blue"
+        let sourceValue = sourceDomain[i];
+        console.log("SourceValue", sourceValue);
+
+        let result = targetDomain.find(targetValue => {
+            return targetValue !== sourceValue;
+        });
+
+        if (result === undefined) {
+            // found a value not equal to each sourceDomain values
+            sourceDomain.splice(i, 1);
+            revised = true
+        }
+        
+    }
+
+    return revised;
+}
+
+</script>  
+</body>
+
+</html> 

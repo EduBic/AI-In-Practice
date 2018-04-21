@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    
+    <style>
+        
+    </style>
+    
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+
+<body>
+
+    <h1>Ingerence in CSPs</h1>
+
+    <p>We can be solve CSPs using two ways:</p>
+    <ul>
+        <li>Search Algorithm</li>
+        <li>Inference: constraint propagation</li>
+    </ul>
+
+    <h2>Local Consistency</h2>
+    <p>Each variable is a node in a graph. 
+        The value set by a variable cause the elimination of 
+        inconsistent value throught the graph</p>
+    <ul>
+        <li>
+            Node Consistency: a single variable is node-consistent if all 
+            the values in the variable's domain satisfy the variable's unary
+            constraint. 
+            
+            A graph is node-consistent if every variable in the 
+            graph is node-consistent. N.B. All n-ary constraints can be 
+            transform into binary constraints.
+        </li>
+        <li>
+            Arc Consistency: a variable is arc-consistent if every value 
+            in its domain satisfies the variable's binary constraints.
+            X_i is arc-consistency with respect to another variable X_j if
+            for every value in current domain D_i there is some value in 
+            the domain D_j that satisfies the binary constraint on the 
+            arc (X_i, X_j).
+            
+            A graph is arc-consistent if every variable is arc-consistent
+            with every other variable.
+
+            The algorithm AC-3 make every variable arc-consistent. The 
+            arc-consistent CSP will in most cases be faster to search 
+            because its variables have smaller domains.
+
+            <a href="ac-3-algorithm.html">AC-3 example</a>
+        </li>
+        <li>
+            Path Consistency:
+        </li>
+    </ul>
+
+        
+<script>
+
+
+
+</script>   
+</body>
+
+</html> 
