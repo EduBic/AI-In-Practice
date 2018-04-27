@@ -78,7 +78,7 @@
             .selectAll(".link");
         
         node = g.append("g")
-            // stle for nodes
+            // style for nodes
             .attr("stroke", "#fff")
             .attr("stroke-width", 1.5)
             .selectAll(".node");
