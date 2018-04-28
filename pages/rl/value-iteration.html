@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        td {
+            width: 2em;
+            height: 2em;
+            text-align: center; 
+            vertical-align: middle;
+        }
+        td.block {
+            background-color: black;
+        }
+        td.finish-good {
+            background-color: green;
+        }
+        td.finish-bad {
+            background-color: red;
+        }
+    </style>
+
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+
+<body>
+
+    <h1>Value Iteration</h1>
+
+    <div id="board-space">
+        <table id="board">
+
+        </table>
+
+        <p>
+            <button id="iterBtn" type="button">Iterate utilities</button>
+            <span> Iteration = </span><span id="iter-counter">0</span>
+        </p>
+    </div>
+
+    <p>U<sub>t</sub> (s) = R(s) + &gamma; max<sub>a</sub> [ &sum; T(s, a, s')  U(s') ]</p>
+    <p>In order to compute Utility of state X = (row: 0, col: 2) </p>
+
+    <p>For each possible action 'a' from A = { U, D, L, R }.
+        Compute the sum of probability that with that action and from s
+        state we go into s' state, multiply it by the U(s') and &gamma;</p>
+
+    <p>First iteration</p>
+    <ul>
+        <li>Compute reward of R(x) = -0.04</li>
+        <li>Now from X we have 4 choices:
+            <ul>
+                <li>a = UP: sum = 0.1
+                <ul>
+                    <li>With 0.8 of probability we remain in the same state X,
+                        here the T(...) * U(s') = 0.8 * 0 = 0
+                    </li>
+                    <li>With 0.1 probability we go on left state,
+                        here the T * U = 0 = 0.1 * 0 = 0
+                    </li>
+                    <li>With 0.1 probability we go on right state,
+                        here the T * U = 0.1 * 1 = 0.1
+                    </li>
+                </ul>
+                </li>
+
+                <li>a = LEFT: sum = 0
+                <ul>
+                    <li>T * U = 0.8 * 0 = 0</li>
+                    <li>T * U = 0.1 * 0 = 0</li>
+                    <li>T * U = 0.1 * 0 = 0</li>
+                </ul>
+                </li>
+
+                <li>a = DOWN: sum = 0.1
+                <ul>
+                    <li>T * U = 0.8 * 0 = 0</li>
+                    <li>T * U = 0.1 * 0 = 0</li>
+                    <li>T * U = 0.1 * 1 = 0.1</li>
+                </ul>
+                </li>
+
+                <li>a = RIGHT: sum = 0.8 (N.B. best move by policy)
+                <ul>
+                    <li>T * U = 0.8 * 1 = 0.8</li>
+                    <li>T * U = 0.1 * 0 = 0</li>
+                    <li>T * U = 0.1 * 0 = 0</li>
+                </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <p>U<sub>1</sub>(x) = -0.04 + 0.5 * max{ 0.1, 0.1, 0, 0.8 } = 0.36 </p>
+
+    <p>Second iteration</p>
+    <ul>
+        <li>R(x) = -0.04</li>
+        <li>&gamma; * max of:
+        <ul>
+            <li>a = UP: sum = ?
+            <ul>
+                <li>T * U<sub>1</sub>(X) = 0.8 * 0.36 = 0.288</li>
+                <li>T * U = 0.1 * -0.04 = ?</li>
+                <li>T * U = 0.1 * 1 = ?</li>
+            </ul>
+            </li>
+            <li>a = LEFT: sum = ?
+            <ul>
+                <li>T * U = 0.8 * -0.04 = ?</li>
+                <li>T * U<sub>1</sub>(X) = 0.1 * 0.36 = 0.036</li>
+                <li>T * U = 0.1 * -0.04 = ?</li>
+            </ul>
+            </li>
+            <li>a = DOWN: sum = ?
+            <ul>
+                <li>T * U = 0.8 * -0.04 = ?</li>
+                <li>T * U = 0.1 * -0.04 = ?</li>
+                <li>T * U = 0.1 * 1 = 0.1</li>
+            </ul>
+            </li>
+            <li>a = RIGHT: sum = 0.832 (N.B. best move by policy)
+            <ul>
+                <li>T * U = 0.8 * 1 = 0.8</li>
+                <li>T * U<sub>1</sub>(X) = 0.1 * 0.36 = 0.036</li>
+                <li>T * U = 0.1 * -0.04 = -0.004</li>
+            </ul>
+            </li>
+        </ul>
+        </li>
+    </ul>
+    <p>U<sub>2</sub>(x) = -0.04 + 0.5 * max{ ?, ?, ?, 0.832} = 0.376</p>
+
+<script>
+
+// Init board
+let board = [];
+let counter = 0;
+
+for (let r = 0; r < 3; r++) {
+    let rowBoard = [];
+    for (let c = 0; c < 4; c++) {
+
+        let type = "plain";
+        let util = 0;
+        if (counter === 5) {
+            type = "block";
+        } else if (counter === 3) {
+            type = "finish-good";
+            util = 1;
+        } else if (counter === 7) {
+            type = "finish-bad";
+            util = -1;
+        }
+        rowBoard.push({ id: counter++, type: type, util: util});
+    }
+    board.push(rowBoard);
+}
+console.log("board", board);
+
+// init graphic
+let uiIterCounter = document.getElementById("iter-counter");
+let uiBoard = document.getElementById("board");
+
+for (let r = 0; r < board.length; r++) {
+    let rowNode = document.createElement("tr");
+
+    for (let c = 0; c < board[r].length; c++) {
+        let colNode = document.createElement("td");
+        colNode.setAttribute("class", board[r][c].type);
+        colNode.setAttribute("id", board[r][c].id);
+        rowNode.appendChild(colNode);
+    }
+    uiBoard.appendChild(rowNode);
+}
+
+// init params
+let actionSet = ["U", "R", "D", "L"];
+let gamma = 0.5;
+let iterCounter = 0;
+
+let utilities = [];
+// init utilities functions;
+for (let i = 0; i < counter; i++) {
+    if (i === 3) {
+        utilities.push(1);
+    } else if (i === 7) {
+        utilities.push(-1);
+    } else {
+        utilities.push(0);
+    }
+}
+
+let iterBtn = document.getElementById("iterBtn")
+    .addEventListener("click", function() {
+        iterCounter++;
+        uiIterCounter.innerHTML = iterCounter;
+
+    // compute value
+    let newUtils = []
+
+    for (let r = 0; r < board.length; r++) {
+        for (let c = 0; c < board[r].length; c++) {
+
+            let stateType = board[r][c].type;
+
+            if (stateType === "finish-good" || stateType === "finish-bad") {
+                newUtils.push(board[r][c].util);
+                continue;
+            } else if (stateType === "block") {
+                continue;
+            }
+
+            let state = board[r][c];
+            console.log("\nS:", state.id, "x:"+ c + " y:" + r);
+            console.log();
+
+            let sumValues = computeSums({ x: c, y: r });
+
+            console.log("gamma max", gamma * getMaxOfArray(sumValues));
+            console.log("Reward", reward(r,c));
+            let util = reward(r, c) + gamma * getMaxOfArray(sumValues);
+            console.log("util", util);
+            newUtils.push(util);
+        }
+    }
+
+    console.log("utils " + iterCounter, newUtils);
+
+    // update utils into state:
+    for (let r = 0; r < board.length; r++) {
+        for (let c = 0; c < board[r].length; c++) {
+            if (board[r][c].type === "plain") {
+                board[r][c].util = newUtils[r * 3 + c];
+            }
+        }
+    }
+
+    // update ui
+    for (let r = 0; r < board.length; r++) {
+        for (let c = 0; c < board[r].length; c++) {
+            if (board[r][c].type === "block") {
+                continue;
+            }
+
+            let tdNode = document.getElementById(board[r][c].id);
+            tdNode.innerHTML = Math.round(newUtils[r * 3 + c]* 100) / 100;
+        }
+    }
+
+})
+
+function computeSums(s) {
+    //console.log("compute sum of ", s);
+    let accList = [];
+
+    for (let i = 0; i < actionSet.length; i++) {
+        let action = actionSet[i];
+
+        // iterate all over next state
+        let nextStates = computeNextStates(s, action);
+
+        let acc = 0;
+        //console.log("nextStates", nextStates);
+        nextStates.forEach(ss => {
+            //console.log(ss.prob, board[ss.y][ss.x].util);
+            acc += ss.prob * board[ss.y][ss.x].util;
+        });
+
+        //console.log("Sum:", acc);
+        accList.push(acc);
+    }
+
+    return accList;
+}
+
+function computeNextStates(s, act) {
+    let result = [];
+
+    let upState = {};
+    upState.x = s.x;
+    upState.y = s.y > 0 ? s.y - 1 : s.y;
+    upState.prob = act === "U" ? 0.8 : (act === "D" ? 0 : 0.1) ;
+    addState(result, upState);
+
+    let downState = {};
+    downState.x = s.x;
+    downState.y = s.y < 2 ? s.y + 1 : s.y;
+    downState.prob = act === "D" ? 0.8 : (act === "U" ? 0 : 0.1);
+    addState(result, downState);
+
+    let leftState = {};
+    leftState.x = s.x > 0 ? s.x - 1 : s.x;
+    leftState.y = s.y;
+    leftState.prob = act === "L" ? 0.8 : (act === "R" ? 0 : 0.1);
+    addState(result, leftState);
+
+    let rightState = {};
+    rightState.x = s.x < 3 ? s.x + 1 : s.y;
+    rightState.y = s.y;
+    rightState.prob = act === "R" ? 0.8 : (act === "L" ? 0 : 0.1);
+    addState(result, rightState);
+
+    //console.log("Result", result);
+    return result;
+}
+
+function addState(list, state) {
+    if (board[state.y][state.x].type !== "block") {
+        list.push(state);
+    } else {
+        //console.log("Blocked push")
+    }
+}
+
+function reward(r, c) {
+    if (r === 1 && c === 1) {
+        console.log("Blocked state, something wrong");
+    } else if (r === 0, c === 3) {
+        return +1;
+    } else if (r === 1, c === 3) {
+        return -1;
+    } else {
+        return -0.04;
+    }
+}
+
+function getMaxOfArray(numArray) {
+  return Math.max.apply(null, numArray);
+}
+
+</script>
+
+
+</body>
+
+</html>
