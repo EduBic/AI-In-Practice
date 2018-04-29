@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    
+    <style>
+        
+    </style>
+    
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+
+<body>
+    
+    <h1>Policy Iteration</h1>
+
+    <ol>
+        <li>Start with an arbitrary policy &pi;<sub>0</sub> </li>
+        <li>Evaluate the utilities given that policy: 
+            U<sub>t</sub>(s) = R(s) + &gamma; &sum;<sub>s'</sub>
+            T(s, &pi;<sub>t</sub>(s), s') U<sub>t</sub>(s')</li>
+        <li>Improve the policy selected: 
+            &pi;<sub>t+1</sub> = argmax<sub>a</sub> &sum;<sub>s'</sub> 
+            T(s,a,s') U<sub>t</sub>(s')
+        </li>
+        <li>Iterate: step 2</li>
+    </ol>
+
+    <p>Now the bellman equation have no max operation in it.
+        It is a linear system.</p>
+
+
+    <h1>Bellman equations</h1>
+
+    <h3>Value</h3>
+    <p>V(s) = max<sub>a</sub>( R(s, a) + &gamma; 
+        &sum;<sub>s'</sub> T(s, a, s') V(s') )</p>
+    
+    <p>V(s') is the value from the next state taken the action a.</p>
+
+    <h3>Quality</h3>
+    <p>Q(s, a) = R(s, a) + &gamma; &sum;<sub>s'</sub> T(s, a, s') 
+        max<sub>q'</sub>Q(s', q')</p>
+
+    <h3>Continuation</h3>
+    <p>C(s, a) = &gamma; &sum;<sub>s'</sub>T(s, a, s') max<sub>a'</sub>
+    ( R(s', a') + C(s', a') )</p>
+
+<script>
+
+
+
+</script>
+        
+        
+</body>
+
+</html> 
