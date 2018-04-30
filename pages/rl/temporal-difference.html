@@ -66,6 +66,19 @@
     <p>(R<sub>t</sub>(s<sub>1</sub>)
         - V<sub>t-1</sub>(s<sub>1</sub>)) is the error</p>
     <p>(1 / t) = &alpha;<sub>t</sub> is the learning rate</p>
+
+    <h2>TD(1) rule</h2>
+    <p>Compute V(s<sub>t</sub>) based on episodes with S<sub>t</sub></p>
+    <p>If we estimate the maximum likelihood instead we use all information
+        that we have.
+    </p>
+
+    <h2>TD(0) rule</h2>
+    <p>Epoch T</p>
+    <p>V<sub>T</sub>(s<sub>t-1</sub>) = V<sub>T</sub>(s<sub>t-1</sub>) 
+        + &alpha;<sub>T</sub> 
+        (r<sub>t</sub> + &gamma; V<sub>T</sub>(s<sub>t</sub>) 
+        - V<sub>T</sub>(s<sub>t-1</sub>))</p>
         
 <script>
 
@@ -126,7 +139,7 @@ function computeValue(stateId) {
 console.log("\n");
 /* **** ** *** *** ***** */
 
-let sequences = [
+let episodes = [
     [ 
         {id: 0, reward: 1},
         {id: 2, reward: 0}, 
@@ -162,25 +175,25 @@ for (let i = 0; i < counterId; i++) {
 estimateValueFromData();
 
 function estimateValueFromData() {
-    let episodes = 4;
+    let maxEpisodes = 4;
     let totalReward = 0;
 
-    for (let i = 0; i < episodes; i++) {
+    for (let i = 0; i < maxEpisodes; i++) {
 
         // long way
-        let value = computeValueFromData(sequences[i], 0);
+        let value = computeValueFromData(episodes[i], 0);
         //console.log("Exp episode " + (i+1) + ":", Object.assign([], experience));
         console.log("V(0), episode " + (i+1) + ":", value);
 
         // short way
-        for (j = 0; j < sequences[i].length; j++) {
+        for (j = 0; j < episodes[i].length; j++) {
             // sum all reward of a sequence:
-            totalReward += sequences[i][j].reward;
+            totalReward += episodes[i][j].reward;
         }
     }
 
-    let result = totalReward / episodes;
-    console.log("\nV(0) for ep " + episodes + " is: ", result);
+    let result = totalReward / episodes.length;
+    console.log("\nV(0) for all episodes is: ", result);
 }
 
 function computeValueFromData(sequence, index) {
@@ -202,6 +215,96 @@ function computeValueFromData(sequence, index) {
     currExp.avg = currExp.avg + (nextValue - currExp.avg) / currExp.n;
     
     return state.reward + gamma * currExp.avg;
+}
+
+/* ******************* */
+// Why TD(1) is wrong
+/* ******************* */
+
+// NB state start from 0.
+let episodeTrans = [
+    [ 
+        // Transaction S_t-1 to S-t with reward
+        {from: 0, reward: 1, to: 2},
+        {from: 2, reward: 0, to: 3}, 
+        {from: 3, reward: 1, to: 5}          
+    ],
+    [
+        {from: 0, reward: 1, to: 2}, 
+        {from: 2, reward: 0, to: 4}, 
+        {from: 4, reward: 10, to: 5}    
+    ],
+    [
+        {from: 0, reward: 1, to: 2},
+        {from: 2, reward: 0, to: 3},
+        {from: 3, reward: 1, to: 5}
+    ],
+    [
+        {from: 0, reward: 1, to: 2},
+        {from: 2, reward: 0, to: 3},
+        {from: 3, reward: 1, to: 5}   
+    ],
+    [
+        {from: 1, reward: 2, to: 2},
+        {from: 2, reward: 0, to: 4},
+        {from: 4, reward: 10, to: 5}
+    ]
+];
+
+temporalDifference(episodeTrans, 1);
+
+function temporalDifference(episodes, lambda) {
+    let alpha = 1;  // learning rate
+    let gamma = 1;  // discounted factor
+
+    // 2-dim array: save V of episodes of state
+    let values = []; 
+
+    values.push([]) // init first values to 0
+    for (let i = 0; i < totalStates; i++) {
+        values[0].push(0);    // init V for each state
+    }
+    
+    for (let epIndex = 0; epIndex < episodes.length; epIndex++) {
+        let episode = episodes[epIndex];
+        
+        let eligibility = [];
+        for (let i = 0; i < totalStates; i++) {
+            eligibility.push(0);
+        }
+
+        values.push([]);
+        for (let i = 0; i < totalStates; i++) {
+            // init V for each state
+            values[epIndex + 1].push(values[epIndex][i]);
+        }
+        let currV = values[epIndex + 1];
+
+        // for each transition
+        for (let t = 0; t < episode.length; t++) {
+            let transition = episode[t];
+
+            let fromState = transition.from;
+            let toState = transition.to;
+            let reward = transition.reward;
+
+            eligibility[fromState]++;
+
+            // temporal difference is equal to any state
+            let tempDiff = reward + 
+                gamma * (currV[toState] - currV[fromState]);
+
+            // for each state
+            for (let s = 0; s < totalStates; s++) {
+                currV[s] = currV[s] + alpha * tempDiff * eligibility[s];
+                eligibility[s] = lambda * gamma * eligibility[s];
+            }
+        }
+
+        console.log("V_" + epIndex + "(s)", currV);
+    }
+
+    //console.log("Estimated V = ", values);
 }
 
 
