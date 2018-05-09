@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    
+    <style>
+        svg {
+            border: 1px solid black;
+        }
+    </style>
+    
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+</head>
+
+    <svg id="main-graph"></svg>
+
+<body>
+        
+<script>
+
+let dataset = {
+    candidates: [ {id:"C"}, {id:"S"}, {id:"L"}, {id:"B"}],
+    preferences: [
+        ["C", "S", "L", "B"],
+        ["S", "B", "L", "C"],
+        ["C", "L", "S", "B"],
+        ["B", "S", "C", "L"]
+    ]
+}
+
+/* UI operations */
+
+let realW = 256;
+let realH = 256;
+
+let svg = d3.select("#main-graph")
+    .attr("width", realW)
+    .attr("height", realH);
+
+let mainG = svg.append("g")
+    .attr("id", "main-group");
+
+let nodesG = mainG
+    .selectAll("g")
+    .data(dataset.candidates, function(d) { return d; })
+    .enter()
+    .append("g")
+    .attr("id", d => { return d; })
+
+let circle = nodesG.append("circle")
+    .attr("r", 12)
+    .style("stroke", "#000")
+    .style("fill", "none");
+
+let label = nodesG.append("text")
+    .attr("transform", "translate(-5,5)")   // center label
+    .text(d => { return d.id; });
+
+let simulation = d3.forceSimulation(dataset.candidates)
+    .force("charge", d3.forceManyBody().strength(-10))
+    //.force("link", d3.forceLink(links).strength(0.05))
+    .force("center", d3.forceCenter(
+        realW / 2, realH / 2
+    ));
+
+simulation.on("tick", ticked);
+
+function ticked() {
+    nodesG.attr("transform", function(d) {
+        return "translate(" + d.x + "," + d.y + ")"; 
+    });
+}
+
+/* Voting System computation */ 
+
+function plurality(data) {
+
+}
+
+
+</script>
+        
+        
+</body>
+
+</html> 

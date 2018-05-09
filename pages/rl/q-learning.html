@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    
+    <style>
+        
+    </style>
+    
+    <!-- <script src="https://d3js.org/d3.v4.min.js"></script> -->
+
+</head>
+
+<body>
+    <h1>Q-Learning</h1>
+        
+<script>
+
+// Pseudo code
+/*
+
+(*) policy improvement
+-> eps-greedy
+eps: probability of explore
+m: number of actions
+
+greedyExploration:
+    prob = random(0, 100)
+    if (prob < eps) 
+        return random action
+    else 
+        return argMax(Q, s);
+
+
+Init:
+    Q(s,a)
+    states S
+    actions A
+
+For each episode: <- How many episode?
+    S = start state
+    For each step of episode until S is terminal:
+        A = greedyExploration
+        Take action A
+        observe R, S'
+        Update Q
+        S = S'
+*/
+
+// First Step 1:
+// Represent a function
+// Take max from a function
+
+
+
+// init Q function with random value
+// For A = {"A", "B"} and S = {s1, s2}
+// Q will be [[0.3, 0.7], [0.2, 0.8]] where:
+// Q[0][0] = 0.3 is the q-value from state s1 taken action "A"
+function initQfunction(stateSet, actionSet, terminalState) {
+    let Q = [];
+    
+    for (let s = 0; s < stateSet.length; s++) {
+        Q.push([]);
+        for (let a = 0; a < actionSet.length; a++) {
+            if (s !== terminalState) {
+                Q[s].push(0);    // Q(terminal-state, .) = 0
+            } else {
+                Q[s].push(Math.random());
+            }
+            
+        }
+    }
+
+    return Q;
+}
+
+// return the Action index of action that gives max return value 
+function argMaxQ(Q, stateIndex) {
+    let qValues = Q[stateIndex];
+
+    let maxActIndex = 0;
+    let maxValue = qValues[maxActIndex];
+
+    for (let a = 0; a < qValues.length; a++) {
+        if (qValues[a] > maxValue) {
+            maxValue = qValues[a];
+            maxActIndex = a;
+        }
+    }
+
+    return maxActIndex;
+}
+
+
+// return the action to take
+function epsGreedyExploration(actionSet, stateId, Q, eps = 30) {
+    let prob = getRandomInt(0, 100);
+
+    if (prob < eps) {
+        let randActionIndex = getRandomInt(0, actionSet.length);
+        return actionSet[randActionIndex];
+    } else {
+        let bestAction = argMaxQ(Q, stateId);
+        return actionSet[maxActIndex];
+    }
+}
+
+function move(action, state) {
+    if (action === "A") {
+        return state.id + 1 % 4;
+    } else if (action === "B") {
+        return state.id - 1 % 4;
+    }
+}
+
+function Qlearning(stateSet, actionSet, endState, startState, 
+                   numEpisodes, learn_rate = 0.9, gamma = 1) {
+
+    let stepBound = 100;
+    
+    let Q = initQfunction(stateSet, actionSet, endState);
+
+    for (let e = 0; e < numEpisodes.length; e++) {
+        let currState = startState;
+
+        for (let t = 0; t < stepBound; t++) {
+            let action = epsGreedyExploration(actionSet, currState.id, Q);
+            
+            // Take action?
+            let landState = actionSet[move(action, currState)];
+            let reward = landState.reward;
+
+            // Update action-value function
+            let TD_Target = reward + gamma * getMaxOfArray(Q[landState.id]);
+            let TD_error = TD_Target - Q[currState.id][action];
+            Q[currState.id][action] += learn_rate * TD_error; 
+
+            // update current state
+            currState = landState;
+
+            // episode finished
+            if (currState.id === endState) {
+                return;
+            }
+        }
+
+    }
+
+}
+
+
+function main() {
+    let actionSet_1 = ["A", "B"];
+    //let stateSet_1 = [0, 1, 2, 3];
+    // let reward_1 = [1, 0, 1, 0];
+    let stateSet_1 = [
+        { id: 0, reward: 0},
+        { id: 1, reward: 0},
+        { id: 2, reward: 0},
+        { id: 3, reward: 1}
+    ]
+    let startState_1 = 0;
+    let endState_1 = 3;
+
+    let numEpisodes_1 = 10;
+    let board = [[]];
+
+    Qlearning(stateSet_1, actionSet_1, 
+        startState_1, endState_1, numEpisodes_1);
+
+}
+
+
+/* Utility functions */
+
+function getMaxOfArray(numArray) {
+  return Math.max.apply(null, numArray);
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+
+</script>
+        
+        
+</body>
+
+</html> 
