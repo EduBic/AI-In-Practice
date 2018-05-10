@@ -2,6 +2,7 @@
 
     matrixGenerator.printMat = function(divId, matrix2d) {
         let container = document.getElementById(divId);
+        let name = "my";
 
         let tableUI = document.createElement("table");
         tableUI.className += "matrix-table";
@@ -9,6 +10,7 @@
 
         for (let r = -1; r < matrix2d.length; r++) {
             let rowUI = document.createElement("tr");
+            
             tableUI.appendChild(rowUI);
 
             if (r < 0) {

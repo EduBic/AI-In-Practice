@@ -107,19 +107,19 @@ function epsGreedyExploration(actionSet, stateId, Q, eps = 30) {
     let prob = getRandomInt(0, 100);
 
     if (prob < eps) {
-        let randActionIndex = getRandomInt(0, actionSet.length);
+        let randActionIndex = getRandomInt(0, actionSet.length - 1);
         return actionSet[randActionIndex];
     } else {
         let bestAction = argMaxQ(Q, stateId);
-        return actionSet[maxActIndex];
+        return actionSet[bestAction];
     }
 }
 
 function move(action, state) {
     if (action === "A") {
-        return state.id + 1 % 4;
+        return (state.id + 1) % 4;
     } else if (action === "B") {
-        return state.id - 1 % 4;
+        return Math.abs(state.id - 1);
     }
 }
 
@@ -130,20 +130,21 @@ function Qlearning(stateSet, actionSet, startState, endState,
     
     let Q = initQfunction(stateSet, actionSet, endState);
 
-    for (let e = 0; e < numEpisodes.length; e++) {
-        let currState = startState;
+    for (let e = 0; e < numEpisodes; e++) {
+        let currState = stateSet[startState];
 
         for (let t = 0; t < stepBound; t++) {
             let action = epsGreedyExploration(actionSet, currState.id, Q);
+            let actionPos = actionSet.findIndex(x => { return x === action; });
             
             // Take action?
-            let landState = actionSet[move(action, currState)];
+            let landState = stateSet[move(action, currState)];
             let reward = landState.reward;
 
             // Update action-value function
             let TD_Target = reward + gamma * getMaxOfArray(Q[landState.id]);
             let TD_error = TD_Target - Q[currState.id][action];
-            Q[currState.id][action] += learn_rate * TD_error; 
+            Q[currState.id][actionPos] += learn_rate * TD_error; 
 
             // update current state
             currState = landState;
