@@ -143,7 +143,7 @@ function Qlearning(stateSet, actionSet, startState, endState,
 
             // Update action-value function
             let TD_Target = reward + gamma * getMaxOfArray(Q[landState.id]);
-            let TD_error = TD_Target - Q[currState.id][action];
+            let TD_error = TD_Target - Q[currState.id][actionPos];
             Q[currState.id][actionPos] += learn_rate * TD_error; 
 
             // update current state
