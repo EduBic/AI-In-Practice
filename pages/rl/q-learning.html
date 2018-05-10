@@ -5,7 +5,15 @@
     <meta charset="utf-8" />
     
     <style>
-        
+        table {
+            border-collapse: collapse;
+        }
+        table td {
+            min-width: 32px;
+            min-height: 32px;
+            text-align: center;
+            border: 1px solid black;
+        }
     </style>
     
     <!-- <script src="https://d3js.org/d3.v4.min.js"></script> -->
@@ -21,8 +29,8 @@
 <script>
 
 // TEST
-mat = [[1,2],[1,2],[3,4],[4,7]];
-matrixGenerator.printMat("q-matrix", mat);
+// mat = [[1,2],[1,2],[3,4],[4,7]];
+// matrixGenerator.printMat("q-matrix", mat);
 
 
 // Pseudo code
@@ -115,16 +123,16 @@ function epsGreedyExploration(actionSet, stateId, Q, eps = 30) {
     }
 }
 
-function move(action, state) {
-    if (action === "A") {
-        return (state.id + 1) % 4;
-    } else if (action === "B") {
+function move(action, state, stateSet) {
+    if (action === "NEXT") {
+        return (state.id + 1) % stateSet.length;
+    } else if (action === "BACK") {
         return Math.abs(state.id - 1);
     }
 }
 
 function Qlearning(stateSet, actionSet, startState, endState, 
-                   numEpisodes, learn_rate = 0.9, gamma = 1) {
+                   numEpisodes, learn_rate = 1, gamma = 0.9) {
 
     let stepBound = 100;
     
@@ -137,44 +145,45 @@ function Qlearning(stateSet, actionSet, startState, endState,
             let action = epsGreedyExploration(actionSet, currState.id, Q);
             let actionPos = actionSet.findIndex(x => { return x === action; });
             
-            // Take action?
-            let landState = stateSet[move(action, currState)];
+            // Take action
+            let landState = stateSet[move(action, currState, stateSet)];
             let reward = landState.reward;
 
             // Update action-value function
             let TD_Target = reward + gamma * getMaxOfArray(Q[landState.id]);
             let TD_error = TD_Target - Q[currState.id][actionPos];
-            Q[currState.id][actionPos] += learn_rate * TD_error; 
+            Q[currState.id][actionPos] += learn_rate * TD_error;
 
             // update current state
             currState = landState;
 
             // episode finished
             if (currState.id === endState) {
-                return;
+                continue;
             }
         }
 
+        matrixGenerator.printMat("q-matrix", Q);
     }
 
 }
 
+myMain();
 
 function myMain() {
-    let actionSet_1 = ["A", "B"];
+    let actionSet_1 = ["BACK", "NEXT"];
     //let stateSet_1 = [0, 1, 2, 3];
     // let reward_1 = [1, 0, 1, 0];
     let stateSet_1 = [
         { id: 0, reward: 0},
-        { id: 1, reward: 0},
-        { id: 2, reward: 0},
-        { id: 3, reward: 1}
+        { id: 1, reward: -1},
+        { id: 2, reward: 1},
+        // { id: 3, reward: 1}
     ]
     let startState_1 = 0;
-    let endState_1 = 3;
+    let endState_1 = 2;
 
     let numEpisodes_1 = 10;
-    let board = [[]];
 
     Qlearning(stateSet_1, actionSet_1, 
         startState_1, endState_1, numEpisodes_1);
