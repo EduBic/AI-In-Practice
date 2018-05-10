@@ -72,7 +72,7 @@ function initQfunction(stateSet, actionSet, terminalState) {
     for (let s = 0; s < stateSet.length; s++) {
         Q.push([]);
         for (let a = 0; a < actionSet.length; a++) {
-            if (s !== terminalState) {
+            if (stateSet[s].id === terminalState) {
                 Q[s].push(0);    // Q(terminal-state, .) = 0
             } else {
                 Q[s].push(Math.random());
@@ -123,7 +123,7 @@ function move(action, state) {
     }
 }
 
-function Qlearning(stateSet, actionSet, endState, startState, 
+function Qlearning(stateSet, actionSet, startState, endState, 
                    numEpisodes, learn_rate = 0.9, gamma = 1) {
 
     let stepBound = 100;
@@ -159,7 +159,7 @@ function Qlearning(stateSet, actionSet, endState, startState,
 }
 
 
-function main() {
+function myMain() {
     let actionSet_1 = ["A", "B"];
     //let stateSet_1 = [0, 1, 2, 3];
     // let reward_1 = [1, 0, 1, 0];
